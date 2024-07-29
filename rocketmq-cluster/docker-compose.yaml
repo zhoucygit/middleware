@@ -1,0 +1,109 @@
+version: '3.8'
+services:
+  namesrv:
+    image: apache/rocketmq:5.2.0
+    container_name: rmqnamesrv
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPT_EXT=-Xmx512M -Xms512M
+    volumes:
+      - ./data/nameserver/logs:/home/rocketmq/logs:rw
+    ports:
+      - 9876:9876
+    networks:
+      - rocketmq
+    restart: on-failure
+    command: sh mqnamesrv
+  broker-a:
+    image: apache/rocketmq:5.2.0
+    container_name: rmqbroker-a
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPT_EXT=-Xmx1024M -Xms1024M
+      # - NAMESRV_ADDR=192.168.10.129:9876;192.168.10.130:9876
+    volumes:
+      - ./data/broker/logs-a:/home/rocketmq/logs:rw  
+      - ./data/broker/data-a:/home/rocketmq/data:rw 
+      - ./conf/broker-a.conf:/home/rocketmq/rocketmq-5.2.0/conf/broker.conf:ro  
+    depends_on:
+      - namesrv
+    networks:
+      - rocketmq
+    restart: on-failure
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+  broker-b:
+    image: apache/rocketmq:5.2.0
+    container_name: rmqbroker-b
+    ports:
+      - 10919:10919
+      - 10921:10921
+      - 10922:10922
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPT_EXT=-Xmx1024M -Xms1024M
+    volumes:
+      - ./data/broker/logs-b:/home/rocketmq/logs:rw  
+      - ./data/broker/data-b:/home/rocketmq/data:rw 
+      - ./conf/broker-b.conf:/home/rocketmq/rocketmq-5.2.0/conf/broker.conf:ro  
+    depends_on:
+      - namesrv
+    networks:
+      - rocketmq
+    restart: on-failure
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+  # proxy:
+  #   image: apache/rocketmq:5.2.0
+  #   container_name: rmqproxy
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '2'
+  #         memory: 1024M
+  #   networks:
+  #     - rocketmq
+  #   depends_on:
+  #     - broker
+  #     - namesrv
+  #   ports:
+  #     - 8080:8080
+  #     - 8081:8081
+  #   restart: on-failure
+  #   environment:
+  #     - TZ=Asia/Shanghai
+  #     - JAVA_OPT_EXT=-Xmx512M -Xms512M
+  #     - NAMESRV_ADDR=rmqnamesrv:9876
+  #   command: sh mqproxy
+
+
+  dashboard:
+    image: apacherocketmq/rocketmq-dashboard:latest
+    container_name:  rocketmq-dashboard
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+    restart: on-failure
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPTS=-Xmx512M -Xms512M -Drocketmq.namesrv.addr=namesrv:9876
+    ports:
+      - 1080:8080
+    networks:
+      - rocketmq
+
+networks:
+  rocketmq:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.25.1.0/24
