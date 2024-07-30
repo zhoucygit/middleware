@@ -1,0 +1,48 @@
+version: '3.1'
+
+services:
+  elastic-1:
+    image: elasticsearch:8.10.4
+    shm_size: '1gb'
+    restart: always
+    container_name: elasticsearch
+    hostname: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - discovery.type: single-node
+      - ES_JAVA_OPTS: "-Xms4G -Xmx4G"
+      - TZ: Asia/Shanghai
+      - ELASTIC_PASSWORD: "010.Tydic"
+    volumes:
+      - ./ES_DATA:/usr/share/elasticsearch/data
+      - ./ES-plugins:/usr/share/elasticsearch/plugins
+    networks:
+      - custom-network
+
+  kibana:
+    image: kibana:8.10.4
+    shm_size: '1gb'
+    restart: always
+    container_name: kibana
+    hostname: kibana
+    ports:
+      - 5601:5601
+    environment:
+      - ELASTICSEARCH_HOSTS: https://elasticsearch:9200
+      - ES_JAVA_OPTS: "-Xms1G -Xmx1G"
+      - TZ: Asia/Shanghai
+    volumes:
+      - ./ES_DATA:/usr/share/elasticsearch/data
+      - ./ES-plugins:/usr/share/elasticsearch/plugins
+    networks:
+      - custom-network
+
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.25.0.0/24

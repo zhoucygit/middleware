@@ -2,6 +2,7 @@ version: '3.8'
 services:
   namesrv:
     image: apache/rocketmq:5.2.0
+    shm_size: '1gb'
     container_name: rmqnamesrv
     deploy:
       resources:
@@ -21,6 +22,7 @@ services:
     command: sh mqnamesrv
   broker-a:
     image: apache/rocketmq:5.2.0
+    shm_size: '1gb'
     container_name: rmqbroker-a
     ports:
       - 10909:10909
@@ -42,6 +44,7 @@ services:
     command: sh mqbroker -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
   broker-b:
     image: apache/rocketmq:5.2.0
+    shm_size: '1gb'
     container_name: rmqbroker-b
     ports:
       - 10919:10919
@@ -86,6 +89,7 @@ services:
 
   dashboard:
     image: apacherocketmq/rocketmq-dashboard:latest
+    shm_size: '1gb'
     container_name:  rocketmq-dashboard
     deploy:
       resources:
