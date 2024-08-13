@@ -1,0 +1,34 @@
+version: '3.1'
+
+services:
+  elasticsearch:
+    # image: elasticsearch:7.17.13
+    image: 192.168.10.212/middleware/es:7.17.13
+    shm_size: '1gb'
+    restart: always
+    container_name: NODENAME
+    hostname: NODENAME
+    network_mode: host
+    # ports:
+    #   - HTTPPORT:HTTPPORT
+    #   - TRANSPORT:TRANSPORT
+    environment:
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "TZ=Asia/Shanghai"
+      #- "ELASTIC_PASSWORD=010.Tydic"
+    volumes:
+      - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./ES_DATA:/usr/share/elasticsearch/data
+      - ./ES_LOG:/usr/share/elasticsearch/logs
+      - ./ES_PLUGINS:/usr/share/elasticsearch/plugins
+      - ./certs:/usr/share/elasticsearch/config/certs
+    # networks:
+    #   - custom-network
+
+# 创建网络
+# networks:
+#   custom-network:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 10.25.2.0/24

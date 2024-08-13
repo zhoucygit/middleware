@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  elastic-1:
+    image: elasticsearch:7.17.13
+    shm_size: '1gb'
+    restart: always
+    container_name: elasticsearch
+    hostname: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms4G -Xmx4G"
+      - "TZ=Asia/Shanghai"
+    volumes:
+      - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./ES_DATA:/usr/share/elasticsearch/data
+      - ./ES_plugins:/usr/share/elasticsearch/plugins
+      - ./conf/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+    networks:
+      - custom-network
+
+  kibana:
+    image: kibana:7.17.13
+    shm_size: '1gb'
+    restart: always
+    container_name: kibana
+    hostname: kibana
+    ports:
+      - 5602:5601
+    environment:
+      - TZ=Asia/Shanghai
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    volumes:
+      - ./conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - custom-network
+
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.25.2.0/24

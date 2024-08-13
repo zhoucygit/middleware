@@ -11,10 +11,10 @@ services:
       - 9200:9200
       - 9300:9300
     environment:
-      - discovery.type: single-node
-      - ES_JAVA_OPTS: "-Xms4G -Xmx4G"
-      - TZ: Asia/Shanghai
-      - ELASTIC_PASSWORD: "010.Tydic"
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
+      - "TZ=Asia/Shanghai"
+      - "ELASTIC_PASSWORD=010.Tydic"
     volumes:
       - ./ES_DATA:/usr/share/elasticsearch/data
       - ./ES-plugins:/usr/share/elasticsearch/plugins
@@ -30,9 +30,9 @@ services:
     ports:
       - 5601:5601
     environment:
-      - ELASTICSEARCH_HOSTS: https://elasticsearch:9200
-      - ES_JAVA_OPTS: "-Xms1G -Xmx1G"
-      - TZ: Asia/Shanghai
+      - TZ=Asia/Shanghai
+      - ES_JAVA_OPTS=-Xmx1024M -Xms1024M
+      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
     volumes:
       - ./ES_DATA:/usr/share/elasticsearch/data
       - ./ES-plugins:/usr/share/elasticsearch/plugins
@@ -45,4 +45,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 10.25.0.0/24
+        - subnet: 10.25.2.0/24

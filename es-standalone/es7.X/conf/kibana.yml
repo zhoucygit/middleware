@@ -1,0 +1,15 @@
+#
+# ** THIS IS AN AUTO-GENERATED FILE **
+#
+
+# Default Kibana configuration for docker target
+server.host: "0.0.0.0"
+server.shutdownTimeout: "5s"
+#elasticsearch.hosts: [ "http://localhost:9200" ]
+monitoring.ui.container.elasticsearch.enabled: true
+kibana.index: ".kibana"
+#server.publicBaseUrl: "http://kibana:5601"  # 这里地址改为你访问kibana的地址，不能以 / 结尾
+i18n.locale: "zh-CN"
+elasticsearch.username: "elastic"
+elasticsearch.password: "ES_07AYjv5bn"
+xpack.security.enabled: true

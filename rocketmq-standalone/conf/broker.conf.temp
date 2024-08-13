@@ -55,4 +55,3 @@ flushDiskType=ASYNC_FLUSH
 #sendMessageThreadPoolNums=128
 #拉消息线程池数量
 #pullMessageThreadPoolNums=128
-
