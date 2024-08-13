@@ -1,3 +1,10 @@
+# 创建挂载路径并更改权限
+创建路径
+ES_plugins
+ES_DATA
+
+更改权限为777 chmod 777 ES_*
+
 # 进入容器
 
 ```
@@ -13,9 +20,10 @@
 ```
 
  # 设置密码
- 
+
 ```
 ./bin/elasticsearch-setup-passwords interactive
 ```
+
 
 
