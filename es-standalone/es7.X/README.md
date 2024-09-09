@@ -1,9 +1,12 @@
 # 创建挂载路径并更改权限
 创建路径
-ES_plugins
-ES_DATA
-
-更改权限为777 chmod 777 ES_*
+```
+mkdir ES_plugins ES_DATA
+```
+更改权限为777 
+```
+chmod 777 ES_plugins ES_DATA
+```
 
 # 进入容器
 

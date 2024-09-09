@@ -18,6 +18,7 @@ services:
       - "discovery.type=single-node"
       - "ES_JAVA_OPTS=-Xms4G -Xmx4G"
       - "TZ=Asia/Shanghai"
+      
     volumes:
       - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
       - ./ES_DATA:/usr/share/elasticsearch/data
