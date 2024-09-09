@@ -5,4 +5,4 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories
 ENV TZ=Asia/Shanghai 
 ENV LANG=en_US.UTF-8  
 ENV LC_ALL=en_US.UTF8
-ADD windows /usr/share/fonts
+ADD windows /usr/share/fonts/windows

@@ -7,7 +7,7 @@ services:
       driver: "json-file"
       options:
         max-size: "100m"  # 单个日志文件的最大大小
-        max-file: "3"    # 保留的最大日志文件数
+        max-file: "1"    # 保留的最大日志文件数
     container_name: redis
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
