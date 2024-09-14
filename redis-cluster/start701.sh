@@ -6,5 +6,4 @@ sed -i "s#REDISPORT#${REDISPORT}#g"  redis-${REDISPORT}.conf
 mkdir /data_${REDISPORT}
 chmod 777 /data_${REDISPORT}
 
-
 docker  compose -f docker-compose-${REDISPORT}.yaml up -d
