@@ -12,8 +12,8 @@ services:
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
     volumes:
-      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf
-      - ./redisdata:/data
+      - ./conf/redis_REDISPORT.conf:/usr/local/etc/redis/redis.conf
+      - ./data_REDISPORT:/data
     environment:
       - TZ=Asia/Shanghai
     healthcheck:
@@ -22,6 +22,6 @@ services:
       timeout: 5s
       retries: 10
     ports:
-      - 6379:6379
+      - REDISPORT:REDISPORT
     networks:
       - nbchat
