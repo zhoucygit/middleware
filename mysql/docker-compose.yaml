@@ -1,6 +1,6 @@
 version: '3.1'
 services:
-  elastic-1:
+  mysql-1:
     image: 192.168.10.212/middleware/mysql:8.0.37
     logging:
       driver: "json-file"

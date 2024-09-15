@@ -1,27 +1,36 @@
 version: '3.9'
 
 services:
-  redis:
-    image: redis:5.0.14
+  redis-REDISPORT:
+    #image: redis:5.0.14
+    image: redis
     logging:
       driver: "json-file"
       options:
         max-size: "100m"  # 单个日志文件的最大大小
         max-file: "1"    # 保留的最大日志文件数
-    container_name: redis
+    container_name: redis-REDISPORT
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
     volumes:
-      - ./conf/redis_REDISPORT.conf:/usr/local/etc/redis/redis.conf
-      - ./data_REDISPORT:/data
+      - ./conf/redis-REDISPORT.conf:/usr/local/etc/redis/redis.conf
+      - ./data-REDISPORT:/data
     environment:
       - TZ=Asia/Shanghai
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 10
+    # healthcheck:
+    #   test: ["CMD", "redis-cli", "ping"]
+    #   interval: 5s
+    #   timeout: 5s
+    #   retries: 10
     ports:
       - REDISPORT:REDISPORT
+      - REDISBUSPORT:REDISBUSPORT
     networks:
-      - nbchat
+      - custom-network
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.25.2.0/24
