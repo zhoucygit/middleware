@@ -25,3 +25,21 @@ services:
       - 6379:6379
     networks:
       - nbchat
+    networks:
+      - redis-network
+
+# 使用现有的网络
+# networks:
+#   redis-network:
+#     external:
+#       name: redis_default
+
+
+#新创建网络
+networks:
+  redis_default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.168.100.0/24  # 指定子网
