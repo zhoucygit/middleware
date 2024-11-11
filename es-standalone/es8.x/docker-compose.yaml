@@ -37,7 +37,9 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - ES_JAVA_OPTS=-Xmx1024M -Xms1024M
-      - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
+    volumes:
+      - ./conf/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ./conf/http_ca.crt:/usr/share/kibana/config/certs/server.crt
     networks:
       - custom-network
 
