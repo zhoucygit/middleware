@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   elastic-1:
-    image: elasticsearch:8.10.4
+    image: elasticsearch:8.13.0
     logging:
       driver: "json-file"
       options:
@@ -38,9 +38,6 @@ services:
       - TZ=Asia/Shanghai
       - ES_JAVA_OPTS=-Xmx1024M -Xms1024M
       - ELASTICSEARCH_HOSTS=https://elasticsearch:9200
-    volumes:
-      - ./ES_DATA:/usr/share/elasticsearch/data
-      - ./ES-plugins:/usr/share/elasticsearch/plugins
     networks:
       - custom-network
 

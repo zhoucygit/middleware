@@ -7,7 +7,9 @@
 docker cp elasticsearch:/usr/share/elasticsearch/config/certs/http_ca.crt .
 curl --cacert http_ca.crt -u elastic:010.Tydic https://localhost:9200
 
-
+# kibana token生成
+8.X放弃了用户密码，使用token来认证，否则会报错，token生成方式为
+```./bin/elasticsearch-service-tokens create elastic/kibana my-token```
 
 # 依赖
 ES启动需要设只内核参数
