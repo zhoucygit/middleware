@@ -10,7 +10,7 @@ services:
     container_name: nacos-standalone-mysql
     env_file:
       - "PREFER_HOST_MODE=hostname"
-      - "NACOS_AUTH_ENABLE=true"
+      - "NACOS_AUTH_ENABLE=true"
       - "MODE=standalone"
       - "SPRING_DATASOURCE_PLATFORM=mysql"
       - "MYSQL_SERVICE_HOST=mysql"
