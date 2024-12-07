@@ -27,16 +27,24 @@ services:
     ports:
       - "8848:8848"
       - "9848:9848"
+    restart: always
     depends_on:
       mysql:
         condition: service_healthy
     restart: always
+    networks:
+      - nacos-network
   mysql:
     container_name: mysql
     build:
       context: .
       dockerfile: ./image/mysql/8/Dockerfile
     image: example/mysql:8.0.30
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
     env_file:
       - ../env/mysql.env
     volumes:
@@ -48,3 +56,21 @@ services:
       interval: 5s
       timeout: 10s
       retries: 10
+    networks:
+      - nacos-network
+
+# 使用现有的网络
+# networks:
+#   redis-network:
+#     external:
+#       name: redis_default
+
+
+#新创建网络
+networks:
+  nacos-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.168.100.0/24  # 指定子网
