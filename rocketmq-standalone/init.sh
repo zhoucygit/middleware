@@ -8,4 +8,5 @@ mkdir -p ./data/broker/logs
 mkdir -p ./data/broker/data
 mkdir -p ./data/nameserver/logs
 chmod 777 -R ./data
+chmod 644 conf/broker.conf
 docker compose -f docker-compose-a.yaml up -d

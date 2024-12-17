@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   namesrv:
-    image: apache/rocketmq:5.2.0
+    image: 192.168.10.212/middleware/rocketmq:5.2.0
     logging:
       driver: "json-file"
       options:
@@ -26,7 +26,7 @@ services:
     restart: on-failure
     command: sh mqnamesrv
   broker:
-    image: apache/rocketmq:5.2.0
+    image: 192.168.10.212/middleware/rocketmq:5.2.0
     shm_size: '1gb'
     container_name: rmqbroker
     ports:
@@ -70,7 +70,7 @@ services:
   #     - NAMESRV_ADDR=rmqnamesrv:9876
   #   command: sh mqproxy
   dashboard:
-    image: apacherocketmq/rocketmq-dashboard:latest
+    image:  192.168.10.212/middleware/rocketmq-dashboard:latest
     shm_size: '1gb'
     container_name:  rocketmq-dashboard
     deploy:
