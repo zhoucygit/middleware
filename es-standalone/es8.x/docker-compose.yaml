@@ -26,7 +26,7 @@ services:
       - custom-network
 
   kibana:
-    image: kibana:8.10.4
+    image: kibana:8.13.0
     shm_size: '1gb'
     restart: always
     container_name: kibana
