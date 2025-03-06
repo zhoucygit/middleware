@@ -9,6 +9,7 @@ services:
         max-size: "100m"  # 单个日志文件的最大大小
         max-file: "1"    # 保留的最大日志文件数
     container_name: redis
+    hostname: redis
     command: redis-server /usr/local/etc/redis/redis.conf
     restart: always
     volumes:
@@ -23,8 +24,6 @@ services:
       retries: 10
     ports:
       - 6379:6379
-    networks:
-      - nbchat
     networks:
       - redis-network
 
