@@ -1,14 +1,12 @@
 cluster.name: ES-CLUSTER
 node.name: 192.168.10.129
-node.master: true
-node.data: true
 path.data: /usr/share/elasticsearch/data
 path.logs: /usr/share/elasticsearch/logs
 network.host: 0.0.0.0
 network.publish_host: 192.168.10.129
 #node.attr.box_type: hot
 http.port: 9200
-transport.tcp.port: 9300
+transport.port: 9300
 #候选主节点地址,默认Elasticsearch绑定在127.0.0.1上，并会检查9300-9305之间的端口是否有其他节点
 discovery.seed_hosts: ["192.168.10.129:9300", "192.168.10.130:9300", "192.168.10.131:9300"]
 #候选主节点名称,最一开始启动一个Elasticsearch集群的时候，会自动设置一些候选主节点名称,默认是它们的hostname

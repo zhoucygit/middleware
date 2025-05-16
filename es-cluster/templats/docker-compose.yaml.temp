@@ -23,6 +23,7 @@ services:
       #- "ELASTIC_PASSWORD=010.Tydic"
     volumes:
       - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./conf/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
       - ./ES_DATA:/usr/share/elasticsearch/data
       - ./ES_LOG:/usr/share/elasticsearch/logs
       - ./ES_PLUGINS:/usr/share/elasticsearch/plugins
