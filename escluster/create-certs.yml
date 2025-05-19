@@ -1,0 +1,20 @@
+version: '2.2'
+services:
+  es-certutil:
+    image: 192.168.10.212/middleware/elasticsearch_arm64:8.13.4
+    container_name: es-certutil
+    environment:
+      - ELASTIC_PASSWORD=Tydic.123.com
+    command: >
+      bash -c "
+        if [ ! -f /certs/bundle.zip ]; then
+          bin/elasticsearch-certutil ca --silent --pem -out /certs/ca.zip &&
+          unzip /certs/ca.zip -d /certs/ &&
+          bin/elasticsearch-certutil cert --silent --pem --in /certs/instances.yml --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key -out /certs/bundle.zip &&
+          unzip /certs/bundle.zip -d /certs/
+        fi
+      "
+    volumes:
+      - ./certs:/certs
+    stdin_open: true
+    tty: true

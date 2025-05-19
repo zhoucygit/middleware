@@ -11,18 +11,19 @@ services:
         max-file: "1"    # 保留的最大日志文件数
     shm_size: '1gb'
     restart: always
-    container_name: elasticsearch-1
-    hostname: elasticsearch-1
+    container_name: NODENAME
+    hostname: NODENAME
     network_mode: host
     # ports:
-    #   - 9200:9200
-    #   - 9300:9300
+    #   - HTTPPORT:HTTPPORT
+    #   - TRANSPORT:TRANSPORT
     environment:
       - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
       - "TZ=Asia/Shanghai"
       #- "ELASTIC_PASSWORD=010.Tydic"
     volumes:
       - ./conf/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./conf/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties
       - ./ES_DATA:/usr/share/elasticsearch/data
       - ./ES_LOG:/usr/share/elasticsearch/logs
       - ./ES_PLUGINS:/usr/share/elasticsearch/plugins

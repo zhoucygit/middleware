@@ -1,0 +1,40 @@
+cluster.name: ES-CLUSTER
+node.name: 192.168.10.129
+path.data: /usr/share/elasticsearch/data
+path.logs: /usr/share/elasticsearch/logs
+network.host: 0.0.0.0
+network.publish_host: 192.168.10.129
+#node.attr.box_type: hot
+http.port: 9200
+transport.port: 9300
+#候选主节点地址,默认Elasticsearch绑定在127.0.0.1上，并会检查9300-9305之间的端口是否有其他节点
+discovery.seed_hosts: ["192.168.10.129:9300", "192.168.10.130:9300", "192.168.10.131:9300"]
+#候选主节点名称,最一开始启动一个Elasticsearch集群的时候，会自动设置一些候选主节点名称,默认是它们的hostname
+cluster.initial_master_nodes: ["192.168.10.129:9300", "192.168.10.130:9300", "192.168.10.131:9300"]
+cluster.routing.allocation.same_shard.host: true
+http.cors.enabled:  true
+http.cors.allow-origin:  "*"
+http.cors.allow-headers: Authorization,X-Requested-With,Content-Length,Content-Type
+
+xpack.security.enabled: true
+xpack.license.self_generated.type: basic
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.key: /usr/share/elasticsearch/config/certs/es-nodes.key
+xpack.security.transport.ssl.certificate: /usr/share/elasticsearch/config/certs/es-nodes.crt
+xpack.security.transport.ssl.certificate_authorities: /usr/share/elasticsearch/config/certs/ca/ca.crt
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.key: /usr/share/elasticsearch/config/certs/es-nodes.key
+xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/certs/es-nodes.crt
+xpack.security.http.ssl.certificate_authorities: /usr/share/elasticsearch/config/certs/ca/ca.crt
+
+
+indices.memory.index_buffer_size: 20%
+cluster.fault_detection.follower_check.interval: 20s
+cluster.fault_detection.follower_check.timeout: 120s
+cluster.fault_detection.follower_check.retry_count: 3
+cluster.fault_detection.leader_check.interval: 20s
+cluster.fault_detection.leader_check.timeout: 120s
+cluster.fault_detection.leader_check.retry_count: 3
+
+
