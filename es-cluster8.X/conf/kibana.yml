@@ -1,0 +1,25 @@
+server.port: 5601
+# 国际化
+i18n.locale: "zh-CN"
+
+# es连接地址，部署es时配了https就用https，没有配https就用http
+elasticsearch.hosts: ["https://127.0.0.1:9200"]
+
+# 访问ES服务器的账号 密码
+# elasticsearch.username: "elastic"
+#  密码就是上面生成的kibana_system的密码
+# elasticsearch.password: "010.Tydic"
+# 8.X放弃了用户密码，使用token来认证，否则会报错
+elasticsearch.serviceAccountToken:  AAEAAWVsYXN0aWMva2liYW5hL215LXRva2VuOi1ndC1IaVZBUjRHeGZRbU94QmtZRWc
+# 设置证书路径
+elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/certs/server.crt"]
+
+# 禁用证书验证，因为这是自签名证书
+elasticsearch.ssl.verificationMode: none
+
+
+
+# 服务主机名
+server.host: "0.0.0.0"
+server.shutdownTimeout: "5s"
+monitoring.ui.container.elasticsearch.enabled: true

@@ -1,7 +1,7 @@
 # 说明
 8.X ES默认启用认证，并使用https协议，因此集群方式需要先生成证书，访问时需要带上证书及认证
 
-# 生成证书
+# 1、生成证书
 
 ## 创建生成证书的临时容器
 docker run -itd --name estest 192.168.10.212/middleware/elasticsearch_arm64:8.13.4 bash
@@ -38,11 +38,11 @@ cp /tmp/es-nodes/* /tmp/certs
 docker cp estest:/tmp/certs ./
 将证书分发到起他机器
 
-# 执行初始化脚本部署集群
+# 2、执行初始化脚本部署集群
 
 
 
-# 验证
+# 3、验证
 因为证书是私有证书，所以验证的时候要先把证书搞出来
 ```
 docker cp elasticsearch:/usr/share/elasticsearch/config/certs/http_ca.crt .
@@ -69,16 +69,15 @@ sudo sysctl -w vm.max_map_count=262144
 
 ```
 
- # 生成秘钥
-
-```
-如果版本不对，有可能需要重新生成秘钥文件，秘钥文件生成方式为
-./bin/elasticsearch-certutil cert -out  config/elastic-certificates.p12 -pass
-```
-
  # 设置密码
  
 ```
 ./bin/elasticsearch-setup-passwords interactive
 ```
 
+
+
+
+# kibana token生成
+8.X放弃了用户密码，使用token来认证，否则会报错，token生成方式为
+```./bin/elasticsearch-service-tokens create elastic/kibana my-token```
