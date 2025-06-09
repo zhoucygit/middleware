@@ -1,0 +1,267 @@
+services:
+  mysql:
+    image: 192.168.10.212/middleware/mysql_arm64:8.0.42
+    container_name: mysql-kb
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=mhQ5D5Ll8P3zJ5Uj
+      - TZ=Asia/Shanghai
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysql/init:/docker-entrypoint-initdb.d
+      - /data/nbchat-kb/data/mysql:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD-SHELL", "mysqladmin -u root -pmhQ5D5Ll8P3zJ5Uj ping -h 127.0.0.1 | grep 'is alive'"]
+      interval: 5s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 13306:3306
+    networks:
+      - knowledge
+
+  redis:
+   image: 192.168.10.212/middleware/redis_arm64:6.2.14
+   container_name: redis-kb
+   command: redis-server /usr/local/etc/redis/redis.conf
+   restart: always
+   volumes:
+     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+     - /data/nbchat-kb/data/redis:/data
+   environment:
+     - TZ=Asia/Shanghai
+   ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+   healthcheck:
+     test: ["CMD", "redis-cli", "ping"]
+     interval: 5s
+     timeout: 5s
+     retries: 10
+   ports:
+     - 16379:6379
+   networks:
+     - knowledge
+
+  nacos-server:
+    image: 192.168.10.212/middleware/nacos-server_arm64:v2.4.2
+    container_name: nacos-server-kb
+    restart: always
+    environment:
+      - NACOS_APPLICATION_PORT=18848
+      - NACOS_AUTH_ENABLE=true
+      - PREFER_HOST_MODE=hostname
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - MYSQL_SERVICE_HOST=mysql-kb
+      - MYSQL_SERVICE_DB_NAME=nacos
+      - MYSQL_SERVICE_PORT=3306
+      - MYSQL_SERVICE_USER=root
+      - MYSQL_SERVICE_PASSWORD=mhQ5D5Ll8P3zJ5Uj
+      - MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useSSL=false&allowPublicKeyRetrieval=true
+      - NACOS_AUTH_IDENTITY_KEY=NbchatNacosServerIdentify
+      - NACOS_AUTH_IDENTITY_VALUE=EMlLVUhpQXnPEqkuZIXjgFmZ
+      - NACOS_AUTH_TOKEN=UDQwbzVEbjduZE5yZWNYcTVFanpwT0Q2V0E4RnJwRXQ=
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    volumes:
+      - /data/nbchat-kb/data/nacos/standalone-logs/:/home/nacos/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://nacos-server-kb:18848/nacos/actuator/prometheus"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "18848:18848"
+      - "19848:19848"
+    networks:
+      - knowledge
+
+  rocketmq-namesrv:
+    image: 192.168.10.212/middleware/rocketmq_arm64:5.3.3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    shm_size: '1gb'
+    container_name: rocketmq-namesrv
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPT_EXT=-Xmx1024M -Xms1024M
+    volumes:
+      - /data/nbchat-kb/data/rocketmq/nameserver/logs:/home/rocketmq/logs:rw
+    ports:
+      - 19876:9876
+    networks:
+      - knowledge
+    restart: on-failure
+    command: sh mqnamesrv
+  rocketmq-broker:
+    image: 192.168.10.212/middleware/rocketmq_arm64:5.3.3
+    shm_size: '1gb'
+    container_name: rocketmq-broker
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPT_EXT=-Xmx1024M -Xms1024M
+      - NAMESRV_ADDR=rocketmq-namesrv:9876
+    volumes:
+      - /data/nbchat-kb/data/rocketmq/broker/logs:/home/rocketmq/logs:rw
+      - /data/nbchat-kb/data/rocketmq/broker/data:/home/rocketmq/data:rw
+      - ./rocketmq/broker.conf:/home/rocketmq/rocketmq-5.2.0/conf/broker.conf:ro
+    depends_on:
+      - rocketmq-namesrv
+    networks:
+      - knowledge
+    restart: on-failure
+    command: sh mqbroker -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+
+  elasticsearch:
+    image: 192.168.10.155:7777/common/elasticsearch:7.16.2
+    container_name: elasticsearch
+    restart: always
+    environment:
+      - TZ=Asia/Shanghai
+      - cluster.name=standalone
+      - node.name=node-1
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=true
+      - ES_JAVA_OPTS=-Xms4000m -Xmx4000m
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /data/nbchat-kb/data/elasticsearch:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://elasticsearch:9200"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    ports:
+      - 9200:9200
+    networks:
+      - knowledge
+
+  minio:
+    image: 192.168.10.155:7777/common/minio:RELEASE.2023-03-24T21-41-23Z
+    container_name: minio
+    command: minio server /minio_data --console-address ":9999"
+    restart: always
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: u6sa34ulpUbjc3a9Ig96hJMYas3GqckB
+    volumes:
+      - /data/nbchat-kb/data/minio:/minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    ports:
+      - 9000:9000
+      - 9999:9999
+    networks:
+      - knowledge
+ 
+  etcd:
+    image: 192.168.10.155:7777/common/etcd:v3.5.5
+    container_name: etcd
+    command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
+    restart: always
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    environment:
+      - ETCD_AUTO_COMPACTION_MODE=revision
+      - ETCD_AUTO_COMPACTION_RETENTION=1000
+      - ETCD_QUOTA_BACKEND_BYTES=4294967296
+    volumes:
+      - /data/nbchat-kb/data/etcd:/etcd
+    healthcheck:
+      test: ["CMD-SHELL", "ETCDCTL_API=3 etcdctl --endpoints=http://etcd:2379 endpoint health | grep 'is healthy'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 2379:2379
+    networks:
+      - knowledge
+
+  milvus:
+    image: 192.168.10.155:7777/common/milvus:v2.3.8
+    container_name: milvus
+    command: ["milvus", "run", "standalone"]
+    restart: always
+    ulimits:
+      nproc: 655350
+      nofile:
+        soft: 655350
+        hard: 655350
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+    volumes:
+      - ./milvus/milvus.yaml:/milvus/configs/milvus.yaml
+      - /data/nbchat-kb/data/milvus:/var/lib/milvus
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/api/v1/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 19530:19530
+      - 9091:9091
+    depends_on:
+      - "etcd"
+    networks:
+      - knowledge
+  
+  milvus-attu:
+    image: 192.168.10.155:7777/common/attu:v2.4.5
+    container_name: milvus-attu
+    restart: always
+    environment:
+      MILVUS_URL: 172.168.1.242:19530
+    ports:
+      - "3000:3000"
+
+networks:
+  knowledge:
+    driver: bridge
