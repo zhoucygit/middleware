@@ -115,7 +115,7 @@ services:
       - 19876:9876
     networks:
       - knowledge
-    restart: on-failure
+    restart: always
     command: sh mqnamesrv
   rocketmq-broker:
     image: 192.168.10.212/middleware/rocketmq_arm64:5.3.3
@@ -142,8 +142,31 @@ services:
       - rocketmq-namesrv
     networks:
       - knowledge
-    restart: on-failure
+    restart: always
     command: sh mqbroker -c /home/rocketmq/rocketmq-5.2.0/conf/broker.conf
+
+  rocketmq-dashboard:
+    image:  192.168.10.212/middleware/rocketmq-dashboard_arm64:2.0.1
+    shm_size: '1gb'
+    container_name:  rocketmq-dashboard
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1024M
+    restart: always
+    depends_on:
+      - rocketmq-broker
+    environment:
+      - TZ=Asia/Shanghai
+      - JAVA_OPTS=-Xmx512M -Xms512M -Drocketmq.namesrv.addr=rocketmq-namesrv:9876
+    ports:
+      - 8080:8080
+    networks:
+      - knowledge
+
+
+
 
   elasticsearch:
     image: 192.168.10.155:7777/common/elasticsearch:7.16.2
