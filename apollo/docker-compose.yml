@@ -1,0 +1,58 @@
+version: "3"
+services:
+  apollo-configservice:
+    container_name: apollo-configservice
+    image: apolloconfig/apollo-configservice:2.1.0
+    ports:
+      - "18080:8080"
+    volumes:
+      - "./logs/configservice:/opt/logs/100003171"
+    environment:
+      - spring_datasource_url=jdbc:mysql://${mysqlIp}:3306/apolloconfigdb?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=COALzm2020!@#
+      - eureka.instance.prefer-ip-address=true
+      - eureka.instance.ip-address=apollo-configservice
+    networks:
+      - apollo_network
+  apollo-adminservice:
+    container_name: apollo-adminservice
+    image: apolloconfig/apollo-adminservice:2.1.0
+    ports:
+      - "18090:8090"
+    depends_on:
+      - apollo-configservice
+    links:
+      - apollo-configservice
+    volumes:
+      - "$PWD/logs/adminservice:/opt/logs/100003172"
+    environment:
+      - spring_datasource_url=jdbc:mysql://${mysqlIp}:3306/apolloconfigdb?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=COALzm2020!@#
+      - eureka.instance.prefer-ip-address=true
+      - eureka.instance.ip-address=apollo-adminservice
+    networks:
+      - apollo_network
+  apolo-portal:
+    container_name: apollo-portal
+    image: apolloconfig/apollo-portal:2.1.0
+    ports:
+      - "18070:8070"
+    volumes:
+      - "$PWD/logs/portalservice:/opt/logs/100003173"
+    environment:
+      - spring_datasource_url=jdbc:mysql://${mysqlIp}:3306/apolloportaldb?characterEncoding=utf8
+      - spring_datasource_username=root
+      - spring_datasource_password=COALzm2020!@#
+      - apollo_portal_envs=dev
+      - dev_meta=http://apollo-configservice:8080
+      - eureka.instance.prefer-ip-address=true
+      - eureka.instance.ip-address=apollo-adminservice
+    networks:
+      - apollo_network
+networks:
+  apollo_network:
+    ipam:
+      config:
+        - subnet: 10.103.0.0/16

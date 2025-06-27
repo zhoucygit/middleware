@@ -1,0 +1,38 @@
+services:
+  zookeeper:
+    image: 192.168.10.212/middleware/zookeeper_arm64:3.8.4-jre-17
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    restart: always
+    hostname: zookeeper-a
+    volumes:
+      - ./conf/zoo.cfg:/conf/zoo.cfg
+      - ./data:/data
+    environment:
+      - TZ=Asia/Shanghai
+      - ZOO_MY_ID=1
+    healthcheck:
+      test: ["CMD-SHELL", "echo ruok | nc 127.0.0.1 2181 | grep imok"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    extra_hosts:
+      - "zookeeper-b:10.100.15.22"
+      - "zookeeper-c:10.100.15.23"
+    networks:
+      - custom-network
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.25.2.0/24

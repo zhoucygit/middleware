@@ -52,7 +52,7 @@ services:
 
   nacos-server:
     image: 192.168.10.212/middleware/nacos-server_arm64:v2.4.2
-    container_name: nacos-server-kb
+    container_name: nacos-server
     restart: always
     environment:
       - NACOS_APPLICATION_PORT=18848
@@ -69,6 +69,8 @@ services:
       - NACOS_AUTH_IDENTITY_KEY=NbchatNacosServerIdentify
       - NACOS_AUTH_IDENTITY_VALUE=EMlLVUhpQXnPEqkuZIXjgFmZ
       - NACOS_AUTH_TOKEN=UDQwbzVEbjduZE5yZWNYcTVFanpwT0Q2V0E4RnJwRXQ=
+      - MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=*
+      - MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED=true
     ulimits:
       nproc: 655350
       nofile:
