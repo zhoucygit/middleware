@@ -1,0 +1,159 @@
+version: '3.1'
+services:
+  #演示环境-中核版本
+  mysql:
+    image: 192.168.10.212/middleware/mysql_arm64:8.0.42
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    shm_size: '1gb'
+    restart: always
+    # container_name: mysql-onecode
+    hostname: mysql-onecode
+    ports:
+      - 3306:3306
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+    environment:
+      - "TZ=Asia/Shanghai"
+      - "MYSQL_ROOT_PASSWORD=DBAuser_pass_001"
+    volumes:
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - /data/onecode/mysql/mydata_onecode:/var/lib/mysql
+      - ./mysql/my_init:/docker-entrypoint-initdb.d
+    networks:
+      - custom-network
+
+
+  redis:
+    image: 192.168.10.212/middleware/redis_arm64:6.2.14
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    # container_name: redis
+    hostname: redis
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - /data/onecode/redis/data:/data
+    environment:
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 6379:6379
+    networks:
+      - custom-network
+
+  elasticsearch:
+    image: 192.168.10.212/middleware/elasticsearch_arm64:7.17.28
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    shm_size: '1gb'
+    restart: always
+    # container_name: elasticsearch
+    hostname: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "discovery.type=single-node"
+      - "ES_JAVA_OPTS=-Xms4G -Xmx4G"
+      - "TZ=Asia/Shanghai"
+    volumes:
+      - ./elastic/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - /data/onecode/elasticsearch/es_data:/usr/share/elasticsearch/data
+      - /data/onecode/elasticsearch/es_plugins:/usr/share/elasticsearch/plugins
+      - ./elastic/elastic-certificates.p12:/usr/share/elasticsearch/config/elastic-certificates.p12
+    networks:
+      - custom-network
+
+  kibana:
+    image: 192.168.10.212/middleware/kibana_arm64:7.17.28
+    shm_size: '1gb'
+    restart: always
+    # container_name: kibana
+    hostname: kibana
+    ports:
+      - 5601:5601
+    environment:
+      - TZ=Asia/Shanghai
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    volumes:
+      - ./elastic/kibana.yml:/usr/share/kibana/config/kibana.yml
+    networks:
+      - custom-network
+
+
+  nacos:
+    image: 192.168.10.212/middleware/nacos-server_arm64:v2.4.2
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    # container_name: nacos
+    environment:
+      - "PREFER_HOST_MODE=hostname"
+      - "NACOS_AUTH_ENABLE=true"
+      - "MODE=standalone"
+      - "SPRING_DATASOURCE_PLATFORM=mysql"
+      - "MYSQL_SERVICE_HOST=mysql-onecode"
+      - "MYSQL_SERVICE_DB_NAME=nacos"
+      - "MYSQL_SERVICE_PORT=3306"
+      - "MYSQL_SERVICE_USER=root"
+      - "MYSQL_SERVICE_PASSWORD=DBAuser_pass_001"
+      - "MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+      - "NACOS_AUTH_IDENTITY_KEY=etKey012345678"
+      - "NACOS_AUTH_IDENTITY_VALUE=onecodeetKey012345678"
+      - "NACOS_AUTH_TOKEN=SecretKey012345678901234567890123456789012345678901234567890123456789"
+    volumes:
+      - /data/onecode/nacos/standalone-logs/:/home/nacos/logs
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    restart: always
+    networks:
+      - custom-network
+
+  minio:
+    image: 192.168.10.212/middleware/minio_arm64:RELEASE.2025-04-22T22-12-26Z-cpuv1
+    # container_name: minio
+    command: minio server /minio_data --console-address ":9999"
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: u6sa34ulpUbjc3a9Ig96hJMYas3GqckB
+    volumes:
+      - /data/onecode/minio:/minio_data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    ports:
+      - 9000:9000
+      - 9999:9999
+    networks:
+      - custom-network
+
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.25.2.0/24

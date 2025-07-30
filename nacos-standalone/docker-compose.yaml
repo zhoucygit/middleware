@@ -8,7 +8,7 @@ services:
         max-size: "100m"  # 单个日志文件的最大大小
         max-file: "1"    # 保留的最大日志文件数
     container_name: nacos-standalone-mysql
-    env_file:
+    environment:
       - "PREFER_HOST_MODE=hostname"
       - "NACOS_AUTH_ENABLE=true"
       - "MODE=standalone"
@@ -29,10 +29,6 @@ services:
     ports:
       - "8848:8848"
       - "9848:9848"
-    restart: always
-    depends_on:
-      mysql:
-        condition: service_healthy
     restart: always
     networks:
       - nacos-network
