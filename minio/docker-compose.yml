@@ -1,6 +1,6 @@
 services:
   minio:
-    image: minio:RELEASE.2023-03-24T21-41-23Z
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio
     command: minio server /minio_data --console-address ":9999"
     restart: always
@@ -17,8 +17,6 @@ services:
     ports:
       - 9000:9000
       - 9999:9999
-    networks:
-      - knowledge
     networks:
       - custom-network
 
