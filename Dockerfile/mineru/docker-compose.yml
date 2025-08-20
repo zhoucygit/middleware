@@ -1,12 +1,8 @@
 services:
   mineru_api_1:
     container_name: mineru_api_1
-    image: nvidia/cuda_minicuda:12.0.0-devel-ubuntu20.04
-    #image: nlp-image:2.0.3 
-    command: bash
-    # mineru-api --host 0.0.0.0 --port 30001
-    # 如需启用 torch compile，取消下一行注释
-    # command: mineru-api --host 0.0.0.0 --port 30001 --enable-torch-compile
+    image: mineru2.0:v1
+    privileged: true
     ports:
       - "20001:30001"
     volumes:
@@ -16,6 +12,7 @@ services:
       - ./mineru.json:/root/mineru.json
     environment:
       - MINERU_MODEL_SOURCE=local
+      - CUDA_VISIBLE_DEVICES=2,3
     shm_size: "32g"
     ipc: host
     runtime: nvidia
@@ -23,9 +20,14 @@ services:
       resources:
         reservations:
           devices:
-            - capabilities: [gpu]
-              device_ids: ["0"]
+            - driver: nvidia
+              count: all    # 这里写 all 就是所有 GPU
+              capabilities: [gpu]
     restart: always
+    command:  
+      mineru-api --host 0.0.0.0 --port 30001
+    # 如需启用 torch compile，取消下一行注释
+    # command: mineru-api --host 0.0.0.0 --port 30001 --enable-torch-compile
 
 
   mineru-server:
@@ -38,6 +40,7 @@ services:
     runtime: nvidia
     environment:
       - MINERU_MODEL_SOURCE=local
+      - CUDA_VISIBLE_DEVICES=2,3
     volumes:
       - ./envs/mineru:/opt/miniconda/envs/mineru
       - ./data:/data
@@ -48,8 +51,12 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              device_ids: ['0']
+              count: all    # 这里写 all 就是所有 GPU
               capabilities: [gpu]
+            # 另一种写法
+            # - driver: nvidia
+            #   device_ids: ['0']
+            #   capabilities: [gpu]
     ports:
       - "30000:30000"
     command: >
