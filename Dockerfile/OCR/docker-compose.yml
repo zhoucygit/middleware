@@ -1,0 +1,83 @@
+
+services:
+
+  nbchat-kb-ocr-1:
+    image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
+    container_name: nbchat-kb-ocr-1
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    restart: always
+    ports:
+      - 28081:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+    runtime: nvidia
+    networks:
+      - custom-network
+
+  nbchat-kb-ocr-2:
+    image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
+    container_name: nbchat-kb-ocr-2
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    restart: always
+    ports:
+      - 28082:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+    runtime: nvidia
+    networks:
+      - custom-network
+
+  nbchat-kb-ocr-3:
+    image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
+    container_name: nbchat-kb-ocr-3
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    restart: always
+    ports:
+      - 28083:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+    runtime: nvidia
+    networks:
+      - custom-network
+
+  nbchat-kb-ocr-4:
+    image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
+    container_name: nbchat-kb-ocr-4
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+    restart: always
+    ports:
+      - 28084:8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              capabilities: [gpu]
+              count: all
+    runtime: nvidia
+    networks:
+      - custom-network
+
+# 创建网络
+networks:
+  custom-network:
+    driver: bridge
