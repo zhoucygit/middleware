@@ -18,6 +18,11 @@ RUN sed -i 's|http://.*.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/
         python3 python3-pip \
         wget \
         vim \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+        libsm6 \
+        libxrender1 \
+        libxext6 \
         net-tools && \
     ln -sf /usr/bin/python3 /usr/bin/python && \
     locale-gen en_US.UTF-8 && \
