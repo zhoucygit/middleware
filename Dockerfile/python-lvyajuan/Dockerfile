@@ -13,6 +13,8 @@ RUN sed -i 's|http://.*.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/
     apt-get update && \
     apt-get install -y --no-install-recommends \
         nocache \
+        curl  \
+        tcpdump \
         locales \
         tzdata \
         python3 python3-pip \
