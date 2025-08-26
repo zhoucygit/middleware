@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: intelligent-review
+  name: evaluation-nacos-server
+  labels:
+    k8s.kuboard.cn/layer: svc
+    app: evaluation-nacos-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evaluation-nacos-server
+  template:
+    metadata:
+      labels:
+        app: evaluation-nacos-server
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - evaluation-nacos-server
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: evaluation-nacos
+          imagePullPolicy: IfNotPresent
+          image:  registry.steam.crcloud.com/cr-shouzheng-sz-ai-bid/nacos-server_arm64:v2.4.2
+          env:
+            - name: "PREFER_HOST_MODE"
+              value: "hostname"
+            - name: "NACOS_AUTH_ENABLE"
+              value: "true"
+            - name: "MODE"
+              value: "standalone"
+            - name: "SPRING_DATASOURCE_PLATFORM"
+              value: "mysql"
+            - name: "MYSQL_SERVICE_HOST"
+              value: "10.133.174.99"
+            - name: "MYSQL_SERVICE_DB_NAME"
+              value: "ty_nacos"
+            - name: "MYSQL_SERVICE_PORT"
+              value: "3307"
+            - name: "MYSQL_SERVICE_USER"
+              value: "ty_ai_bid"
+            - name: "MYSQL_SERVICE_PASSWORD"
+              value: "FYsd@fge352"
+            - name: "MYSQL_SERVICE_DB_PARAM=characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true"
+            - name: "NACOS_AUTH_IDENTITY_KEY"
+              value: "2222"
+            - name: "NACOS_AUTH_IDENTITY_VALUE"
+              value: "2xxx"
+            - name: "NACOS_AUTH_TOKEN"
+              value: "SecretKey012345678901234567890123456789012345678901234567890123456789"
+            - name: "MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE"
+              value: "*""
+            - name: "MANAGEMENT_ENDPOINT_PROMETHEUS_ENABLED"
+              value: "true"
+          ports:
+            - containerPort: 8848
+              name: http-8848
+              protocol: TCP
+            - containerPort: 9848
+              name: http-9848
+              protocol: TCP			 
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8192Mi
+            requests:
+              cpu: '0.1'
+              memory: 100Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: intelligent-review
+  name: evaluation-nacos-server
+spec:
+  selector:
+    app: evaluation-nacos-server
+  ports:
+    - protocol: TCP
+      name: http-8848
+      port: 8848
+      targetPort: 8848
+    - protocol: TCP
+      name: http-9848
+      port: 9848
+      targetPort: 9848
+  sessionAffinity: None
+  type: ClusterIP

@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: pingshen-dev
+  name: evaluation-minio
+  labels:
+    k8s.kuboard.cn/layer: svc
+    app: evaluation-minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: evaluation-minio
+  template:
+    metadata:
+      labels:
+        app: evaluation-minio
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - evaluation-minio
+              topologyKey: kubernetes.io/hostname
+      containers:
+        - name: evaluation-minio
+          imagePullPolicy: IfNotPresent
+          image: registry.steam.crcloud.com/cr-shouzheng-sz-ai-bid/minio_arm64:RELEASE.2025-04-22T22-12-26Z-cpuv1
+          command: [ "minio", "server", "/minio_data", "--console-address", ":9999" ]
+          env:
+            - name: MINIO_ROOT_USER
+              value: "minioadmin"
+            - name: "u6sa34ulpUbjc3a9Ig96hJMYas3GqckB"
+              value: "8848"
+          ports:
+            - containerPort: 9000
+              name: http
+              protocol: TCP
+            - containerPort: 9999
+              name: admin
+              protocol: TCP			 
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8192Mi
+            requests:
+              cpu: '0.1'
+              memory: 100Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: pingshen-dev
+  name: evaluation-minio
+spec:
+  selector:
+    app: evaluation-minio
+  ports:
+    - protocol: TCP
+      name: http
+      port: 9000
+      targetPort: 9000
+    - protocol: TCP
+      name: admin
+      port: 9999
+      targetPort: 9999
+  sessionAffinity: None
+  type: ClusterIP
