@@ -1,33 +1,30 @@
-FROM ubuntu                                                                    
+FROM docker.m.daocloud.io/library/alpine:latest
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    TZ=Asia/Shanghai \
-    LC_ALL=en_US.UTF-8 \
-    LANG=en_US.UTF-8 \
-    LANGUAGE=en_US.UTF-8
+    
+ENV TZ=Asia/Shanghai 
+ENV LANG=en_US.UTF-8  
+ENV LC_ALL=en_US.UTF8
 
-ADD nginx-1.22.1 /tmp/nginx-1.22.1
-ADD nginx-module-vts-master /tmp/nginx-module-vts-master
-ADD nginx_upstream_check_module-master /tmp/nginx_upstream_check_module-master
 
-RUN sed -i 's|http://.*.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/apt/sources.list && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends \
-        nocache \
-        curl  \
-        tcpdump \
-        locales \
-        tzdata \
-        telnet
-        wget \
-        vim \
-        net-tools \
-        gcc libpcre3 libpcre3-dev libssl-dev zlib1g-dev  make && \
-    locale-gen en_US.UTF-8 && \
-    update-locale LANG=en_US.UTF-8 && \
-    ln -sf /bin/bash /bin/sh && \
-    rm -rf /var/lib/apt/lists/* && \
+RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories && \
+    apk add --no-cache tcpdump curl busybox-extras bash  tzdata bash vim  wget net-tools \
+    patch \
+    gcc \
+    g++ \
+    automake \
+    pcre \
+    pcre-dev \
+    zlib \
+    zlib-dev \
+    openssl \
+    openssl-dev \
+    make && \
+    rm -rf /var/cache/apk/* && \
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
+    mkdir /app  && \
+    echo 'alias "ll=ls -l"' >> /etc/bash/bashrc && \
+    echo 'alias "tailf=tail -f"' >> /etc/bash/bashrc 
     cd /tmp/nginx-1.22.1 && \
     mkdir /middleware && \
     patch -p1 < /tmp/nginx_upstream_check_module-master/check_1.20.1+.patch && \
@@ -49,11 +46,9 @@ RUN sed -i 's|http://.*.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/
      make && make install && \
      mkdir /middleware/nginx/conf.d && \
      mkdir /middleware/nginx/stream.d && \
-     sed -i "s#js;#js mjs;#g"   /etc/nginx/mime.types && \
+     sed -i "s#js;#js mjs;#g"   /middleware/nginx/conf/mime.types && \
      rm -rf /tmp/* 
 
 ADD nginx.conf /middleware/nginx/conf/nginx.conf && \
 ADD default.conf /middleware/nginx/conf.d/default.conf && \
-CMD ["nginx", "-g", "daemon off;"]
-
-
+CMD ["/middleware/nginx/sbin/nginx", "-g", "daemon off;"]
