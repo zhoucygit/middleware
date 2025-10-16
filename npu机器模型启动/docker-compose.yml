@@ -8,12 +8,18 @@ services:
     ipc: host
     pid: host
     working_dir: /usr/local/Ascend/mindie/latest/mindie-service
-    network_mode: host
 
-    # 由于内部无法将端口监听到0.0.0.0
-    # ports:  
-    #   - "19998:19998" 
+    # 限制容器本身日志大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+    # 由于内部无法将端口监听到0.0.0.0，因此无法使用端口映射的方式
+    network_mode: host
     
+    # 设置环境变量，将mindie日志输出到标准输出
     environment:
       - MINDIE_LOG_TO_STDOUT=1
     
@@ -43,9 +49,4 @@ services:
 
     command: >
       sh /app/start_tianshu_cat.sh
-# 限制容器本身日志大小
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "3"
+    

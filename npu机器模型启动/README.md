@@ -1,8 +1,8 @@
 # 使用说明
 # 更改config.json
-更改之前需要确认config.json文件权限属性为650 , 否则模型起不来
+更改之前需要确认config.json文件权限属性为750 , 否则模型起不来
 ```
--rw-r----- 1 root root 3851 Oct 15 07:22 cat_config.json
+-rwxr-x--- 1 root root 3851 Oct 15 07:22 cat_config.json
 ```
 更改 conf文件夹中json文件，主要修改以下几项
 1、 端口 
