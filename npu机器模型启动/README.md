@@ -83,9 +83,7 @@ total 54668216
 
 # 启动模型
 
-
 启动命令
-
 ```
 docker  compose up -d
 ```
