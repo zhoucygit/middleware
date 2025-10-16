@@ -1,0 +1,102 @@
+{
+    "Version" : "1.0.0",
+    "ServerConfig" :
+    {
+        "ipAddress" : "127.0.0.1",
+        "managementIpAddress" : "127.0.0.2",
+        "port" : 19998,
+        "managementPort" : 1026,
+        "metricsPort" : 1027,
+        "allowAllZeroIpListening" : false,
+        "maxLinkNum" : 1000,
+        "httpsEnabled" : false,
+        "fullTextEnabled" : false,
+        "tlsCaPath" : "security/ca/",
+        "tlsCaFile" : ["ca.pem"],
+        "tlsCert" : "security/certs/server.pem",
+        "tlsPk" : "security/keys/server.key.pem",
+        "tlsPkPwd" : "security/pass/key_pwd.txt",
+        "tlsCrlPath" : "security/certs/",
+        "tlsCrlFiles" : ["server_crl.pem"],
+        "managementTlsCaFile" : ["management_ca.pem"],
+        "managementTlsCert" : "security/certs/management/server.pem",
+        "managementTlsPk" : "security/keys/management/server.key.pem",
+        "managementTlsPkPwd" : "security/pass/management/key_pwd.txt",
+        "managementTlsCrlPath" : "security/management/certs/",
+        "managementTlsCrlFiles" : ["server_crl.pem"],
+        "kmcKsfMaster" : "tools/pmt/master/ksfa",
+        "kmcKsfStandby" : "tools/pmt/standby/ksfb",
+        "inferMode" : "standard",
+        "interCommTLSEnabled" : false,
+        "interCommPort" : 1121,
+        "interCommTlsCaPath" : "security/grpc/ca/",
+        "interCommTlsCaFiles" : ["ca.pem"],
+        "interCommTlsCert" : "security/grpc/certs/server.pem",
+        "interCommPk" : "security/grpc/keys/server.key.pem",
+        "interCommPkPwd" : "security/grpc/pass/key_pwd.txt",
+        "interCommTlsCrlPath" : "security/grpc/certs/",
+        "interCommTlsCrlFiles" : ["server_crl.pem"],
+        "openAiSupport" : "vllm",
+        "tokenTimeout" : 600,
+        "e2eTimeout" : 600,
+        "distDPServerEnabled":false
+    },
+
+    "BackendConfig" : {
+        "backendName" : "mindieservice_llm_engine",
+        "modelInstanceNumber" : 1,
+        "npuDeviceIds" : [[4]],
+        "tokenizerProcessNumber" : 8,
+        "multiNodesInferEnabled" : false,
+        "multiNodesInferPort" : 1120,
+        "interNodeTLSEnabled" : false,
+        "interNodeTlsCaPath" : "security/grpc/ca/",
+        "interNodeTlsCaFiles" : ["ca.pem"],
+        "interNodeTlsCert" : "security/grpc/certs/server.pem",
+        "interNodeTlsPk" : "security/grpc/keys/server.key.pem",
+        "interNodeTlsPkPwd" : "security/grpc/pass/mindie_server_key_pwd.txt",
+        "interNodeTlsCrlPath" : "security/grpc/certs/",
+        "interNodeTlsCrlFiles" : ["server_crl.pem"],
+        "interNodeKmcKsfMaster" : "tools/pmt/master/ksfa",
+        "interNodeKmcKsfStandby" : "tools/pmt/standby/ksfb",
+        "ModelDeployConfig" :
+        {
+            "maxSeqLen" : 2048,
+            "maxInputTokenLen" : 1024,
+            "truncation" : false,
+            "ModelConfig" : [
+                {
+                    "modelInstanceType" : "Standard",
+                    "modelName" : "tianshu-14b-std-cat-v3",
+                    "modelWeightPath" : "/models/tianshu-14b-std-cat-v3-0126",
+                    "worldSize" : 1,
+                    "cpuMemSize" : 5,
+                    "npuMemSize" : -1,
+                    "backendType" : "atb",
+                    "trustRemoteCode" : true
+                }
+            ]
+        },
+
+        "ScheduleConfig" :
+        {
+            "templateType" : "Standard",
+            "templateName" : "Standard_LLM",
+            "cacheBlockSize" : 64,
+
+            "maxPrefillBatchSize" : 10,
+            "maxPrefillTokens" : 2048,
+            "prefillTimeMsPerReq" : 150,
+            "prefillPolicyType" : 0,
+
+            "decodeTimeMsPerReq" : 50,
+            "decodePolicyType" : 0,
+
+            "maxBatchSize" : 200,
+            "maxIterTimes" : 16000,
+            "maxPreemptCount" : 0,
+            "supportSelectBatch" : false,
+            "maxQueueDelayMicroseconds" : 5000
+        }
+    }
+}

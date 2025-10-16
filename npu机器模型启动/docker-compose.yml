@@ -1,0 +1,51 @@
+services:
+  tianshu-cat:
+    image: tydicllm_910b3:v1
+    container_name: tianshu-cat
+
+    restart: always
+    privileged: true
+    ipc: host
+    pid: host
+    working_dir: /usr/local/Ascend/mindie/latest/mindie-service
+    network_mode: host
+
+    # 由于内部无法将端口监听到0.0.0.0
+    # ports:  
+    #   - "19998:19998" 
+    
+    environment:
+      - MINDIE_LOG_TO_STDOUT=1
+    
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+
+    volumes:
+      - /usr/local/dcmi:/usr/local/dcmi
+      - /usr/local/bin/npu-smi:/usr/local/bin/npu-smi
+      - /usr/local/Ascend/driver:/usr/local/Ascend/driver
+      - /etc/ascend_install.info:/etc/ascend_install.info
+      - /etc/vnpu.cfg:/etc/vnpu.cfg
+      - ./models:/models
+      - ./conf/cat_config.json:/usr/local/Ascend/mindie/latest/mindie-service/conf/config.json
+      - ./logs:/models/logs
+      - ./start_tianshu_cat.sh:/app/start_tianshu_cat.sh
+
+    command: >
+      sh /app/start_tianshu_cat.sh
+# 限制容器本身日志大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
