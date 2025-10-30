@@ -47,6 +47,16 @@ services:
       - ./logs:/models/logs
       - ./start_tianshu_cat.sh:/app/start_tianshu_cat.sh
 
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c '</dev/tcp/127.0.0.1/19998'"]
+      interval: 5s         # 每 5 秒检测一次
+      timeout: 3s          # 检查超时 3 秒
+      retries: 5           # 连续 5 次失败才标记为 unhealthy
+      start_period: 120s    # 容器启动后等待 10 秒再开始健康检查
+    # 如果启动多实例，需要开启depends_one ,逐个启动，不然会混乱，启动失败
+    # depends_on:
+    #   tianshu-prd:
+    #     condition: service_healthy
     command: >
       sh /app/start_tianshu_cat.sh
     
