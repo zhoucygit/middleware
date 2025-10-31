@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: name_space
+  name: app_name
+  labels:
+    k8s.kuboard.cn/layer: web
+    app: app_name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app_name
+  template:
+    metadata:
+      labels:
+        app: app_name
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - app_name
+              topologyKey: kubernetes.io/hostname
+      imagePullSecrets:
+        - name: image-secret
+      containers:
+        - name: app_name
+          imagePullPolicy: IfNotPresent
+          image: image_name
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '1'
+              memory: 500Mi
+            requests:
+              cpu: '0.1'
+              memory: 100Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: name_space
+  name: app_name
+spec:
+  selector:
+    app: app_name
+  ports:
+    - protocol: TCP
+      name: http
+      port: 80
+      targetPort: 80
+  sessionAffinity: None
+  type: ClusterIP
