@@ -5,6 +5,12 @@ brokerName=broker-a
 #0 表示 Master， >0 表示 Slave
 brokerId=0
 brokerIP1=BROKERIP1
+#Broker 对外服务的监听端口
+listenPort=10911
+#主要用于slave同步master , 默认为listenPort - 2，可以通过配置文件修改。
+fastListenPort=10909
+# Broker HA端口,用于Broker的主从同步，默认为listenPort + 1
+haListenPort=10912
 #在发送消息时，自动创建服务器不存在的topic，默认创建的队列数
 defaultTopicQueueNums=4
 #是否允许 Broker 自动创建Topic，建议线下开启，线上关闭
