@@ -1,0 +1,68 @@
+# 以下模版使用的是vllm框架
+services:
+  ZHINENGTI-Qwen3-30B-A3B-Instruct-2507:
+    image: tydicllm_910b3:v1
+    container_name: ZHINENGTI-Qwen3-30B-A3B-Instruct-2507
+
+    restart: always
+    privileged: true
+    ipc: host
+    pid: host
+
+    # 限制容器本身日志大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+    # 由于内部无法将端口监听到0.0.0.0，因此无法使用端口映射的方式
+
+
+    ports:
+      - "8000:8000"
+
+    # 设置环境变量，将mindie日志输出到标准输出
+    environment:
+      - TZ=Asia/Shanghai
+      - CUDA_VISIBLE_DEVICES=1
+    volumes:
+      - ./models:/models
+
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c '</dev/tcp/127.0.0.1/8000'"]
+      interval: 5s         # 每 5 秒检测一次
+      timeout: 3s          # 检查超时 3 秒
+      retries: 5           # 连续 5 次失败才标记为 unhealthy
+      start_period: 120s    # 容器启动后等待 10 秒再开始健康检查
+    # 如果启动多实例，需要开启depends_one ,逐个启动，不然会混乱，启动失败
+    # depends_on:
+    #   tianshu-prd:
+    #     condition: service_healthy
+
+    
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all    # 这里写 all 就是所有 GPU
+              capabilities: [gpu]
+    command: >
+      /opt/conda/envs/vllm/bin/python3 -u -m vllm.entrypoints.openai.api_server -tp 1 \
+      --model /data/deepseek-r1-distill-qwen-32b-gptq-int4 --host 0.0.0.0 --port 8002 \
+      --dtype float16 --served-model-name DeepSeek-R1-Qwen-32B \
+      --max-model-len 8192 \
+      --enforce-eager --trust-remote-code \
+      --quantization gptq_marlin \
+      --gpu-memory-utilization 0.9
+# 说明：
+# 参数 说明
+# -tp 2 tensor parallel 设置为 2，表示模型会被切分并并行到 2 张 GPU 上。
+# --dtype float16 使用 float16 作为推理精度，节省显存，常用于支持 FP16 的 GPU。
+# --max-model-len 4096 指定最大支持的上下文长度为 4096（token）。
+# --enforce-eager 强制使用 PyTorch eager 模式（关闭 TorchScript、CUDA Graph 等优化），便于调试。
+# --trust-remote-code 允许加载模型时执行 HuggingFace 的自定义 Python 代码（有安全风险）。
+# --quantization gptq_marlin 明确使用 GPTQ + marlin 格式的量化推理，如果模型不是该格式会出错。非量化版本使用None
+# --gpu-memory-utilization 0.9 允许 vLLM 最多使用 GPU 显存的 90%，用于动态规划显存分配， vllm建议配置在0.9以内。
