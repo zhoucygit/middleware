@@ -49,14 +49,32 @@ services:
             - driver: nvidia
               count: all    # 这里写 all 就是所有 GPU
               capabilities: [gpu]
-    command: >
-      /opt/conda/envs/vllm/bin/python3 -u -m vllm.entrypoints.openai.api_server -tp 1 \
-      --model /data/deepseek-r1-distill-qwen-32b-gptq-int4 --host 0.0.0.0 --port 8002 \
-      --dtype float16 --served-model-name DeepSeek-R1-Qwen-32B \
-      --max-model-len 8192 \
-      --enforce-eager --trust-remote-code \
-      --quantization gptq_marlin \
-      --gpu-memory-utilization 0.9
+
+# 启动命令，想多行写的话每个参数必须单独占用一行，并且数字必须用引号引起来，不然会识别成数字，command不识别
+    command:
+      - /opt/conda/envs/vllm/bin/python3 
+      - -u 
+      - -m
+      - vllm.entrypoints.openai.api_server
+      - --served-model-name
+      - tianshu3-30b 
+      - --model
+      - "/models/Qwen3-30B-A3B-Instruct-2507"
+      - -tp 
+      - "1"
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --dtype
+      - float16 
+      - --max-model-len
+      - "8192" 
+      - --enforce-eager 
+      - --trust-remote-code 
+      - --quantization None 
+      - --gpu-memory-utilization
+      - "0.9"
 # 说明：
 # 参数 说明
 # -tp 2 tensor parallel 设置为 2，表示模型会被切分并并行到 2 张 GPU 上。
