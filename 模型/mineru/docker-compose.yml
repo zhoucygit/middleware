@@ -21,7 +21,7 @@ services:
     environment:
       - MINERU_MODEL_SOURCE=local
       - CUDA_VISIBLE_DEVICES=2,3
-    shm_size: "32g"
+    shm_size: "8g"
     ipc: host
     runtime: nvidia
     deploy:

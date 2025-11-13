@@ -1,0 +1,59 @@
+services:
+  PINGSHEN-paddlex_hps_PP-StructureV3_sdk:
+    image: ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlex/hps:paddlex3.3-gpu
+    container_name: PINGSHEN-paddlex_hps_PP-StructureV3_sdk
+
+    restart: always
+    privileged: true
+    ipc: host
+    pid: host
+    shm_size: "8g"
+
+    # 限制容器本身日志大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+    # 由于内部无法将端口监听到0.0.0.0，因此无法使用端口映射的方式
+
+
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    # 设置环境变量，将mindie日志输出到标准输出
+    environment:
+      - TZ=Asia/Shanghai
+      - PADDLEX_HPS_DEVICE_TYPE=gpu
+      - PADDLEX_HPS_USE_HPIP=1
+    volumes:
+      - ./paddlex:/root/.paddlex
+      - ./server:/app
+
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c '</dev/tcp/127.0.0.1/8000'"]
+      interval: 5s         # 每 5 秒检测一次
+      timeout: 3s          # 检查超时 3 秒
+      retries: 5           # 连续 5 次失败才标记为 unhealthy
+      start_period: 30s    # 容器启动后等待 10 秒再开始健康检查
+    # 如果启动多实例，需要开启depends_one ,逐个启动，不然会混乱，启动失败
+    # depends_on:
+    #   tianshu-prd:
+    #     condition: service_healthy
+
+    
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all    # 这里写 all 就是所有 GPU
+              capabilities: [gpu]
+
+# 启动命令，想多行写的话每个参数必须单独占用一行，并且数字必须用引号引起来，不然会识别成数字，command不识别
+    command:
+      - /bin/bash
+      - server.sh
