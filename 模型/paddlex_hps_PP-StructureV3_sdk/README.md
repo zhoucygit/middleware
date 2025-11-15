@@ -111,7 +111,7 @@ curl --request POST \
    "shape": [1, 1],
    "datatype": "BYTES",
    "data": [
-    "{\n  \"file\": \"http://127.0.0.1:18800/test.png\",\n  \"useDocOrientationClassify\": true,\n  \"useDocUnwarping\": false,\n   \"visualize\": false\n}"
+    "{\n  \"file\": \"https://paddle-model-ecology.bj.bcebos.com/paddlex/imgs/demo_image/general_ocr_001.png\",\n  \"useDocOrientationClassify\": true,\n  \"useDocUnwarping\": false,\n   \"visualize\": false\n}"
    ]
   }
  ],
@@ -121,4 +121,10 @@ curl --request POST \
   }
  ]
 }'
+```
+用curl返回结果可能会是以下内容,用api工具可以看到真实内容
+```
+Warning: Binary output can mess up your terminal. Use "--output -" to tell 
+Warning: curl to output it to your terminal anyway, or consider "--output 
+Warning: <FILE>" to save to a file.
 ```
