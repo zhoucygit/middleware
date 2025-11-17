@@ -34,14 +34,21 @@ sonar-scanner \
   -Dsonar.projectName="mat-data-manage" \
   -Dsonar.projectVersion=2.1.0 \
   -Dsonar.sources=./ \
-  -Dsonar.java.binaries="data-manage-api/target,data-manage-common/target,data-manage-mapper/target，data-manage-service/target" \
+  -Dsonar.java.binaries="data-manage-api/target,data-manage-common/target,data-manage-mapper/target,data-manage-service/target" \
   -Dsonar.exclusions="**/.gitignore" \
   -Dsonar.java.source=8 \
   -Dsonar.java.target=8 \
   -Dsonar.host.url=http://10.100.12.22:9000 \
-  -Dsonar.token=squ_8470916e4254f0eaed1ded8eb4863892d4c568ab \
-  -Dsonar.organization=tydic
+  -Dsonar.organization=tydic \
+  -Dsonar.token=squ_59cdbcb4d475f5136bd1f797a5a3e35cf7b80871
+
+# -Dsonar.login=squ_4eec30d1178deb0e19629e99c22251192ea90b0e \
 ```
+
+
+
+# 报告
+高版本不能产生报告，sonar-pdfreport-plugin-4.0.1.jar最高支持到了9.9.6 ，如果需要导出报告的话最好使用低版本sonarqube，如果不需要导出报告，使用高版本即可
 
 
 
