@@ -23,7 +23,7 @@ SonarScanner CLI  这里有一个下拉箭头点一下就能看到
 
 
 
-查看一下页面要求的jdk版本，本次下载的sonar-scanner-cli-7.3.0.5189-linux-aarch64需要jdk17
+查看一下页面要求的jdk版本，本次下载的sonar-scanner-cli-7.3.0.5189-linux-aarch64需要jdk17  扫描静态页面的话本机需要有node20+
 https://docs.sonarsource.com/sonarqube-server/analyzing-source-code/scanners/scanner-environment/general-requirements
 
 
