@@ -2,7 +2,13 @@ services:
   minio:
     image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio
-    command: minio server --compat --address 0.0.0.0:9000 --console-address 0.0.0.0:9999 http://172.16.91.160/minio_data http://172.16.91.161/minio_data http://172.16.91.162/minio_data http://172.16.91.166/minio_data 
+    extra_hosts:
+     - "minio1:172.16.95.87"
+     - "minio2:172.16.95.88"
+     - "minio3:172.16.95.89"
+     - "minio4:172.16.95.90"
+     # 取决于有多少块磁盘修改minio_data{1...4}
+    command: minio server --compat --address 0.0.0.0:9000 --console-address 0.0.0.0:9999 http://minio{1...4}/minio_data{1...4}
     restart: always
     network_mode: host
     environment:
@@ -11,7 +17,7 @@ services:
     volumes:
       - /data/minio_data:/minio_data
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
+      test: ["CMD-SHELL", "echo > /dev/tcp/127.0.0.1/9000"]
+      interval: 10s
       timeout: 20s
       retries: 3

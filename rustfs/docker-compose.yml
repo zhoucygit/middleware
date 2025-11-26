@@ -36,14 +36,15 @@ services:
     container_name: rustfs-server
     extra_hosts:
      - "rustfs1:10.100.13.28"
-     - "rustfs1:10.100.13.29"
-     - "rustfs1:10.100.13.30"
-     - "rustfs1:10.100.13.31"
+     - "rustfs2:10.100.13.29"
+     - "rustfs3:10.100.13.30"
+     - "rustfs4:10.100.13.31"
     ports:
       - "9000:9000" # S3 API port
       - "9001:9001" # Console port
+
     environment:
-      - RUSTFS_VOLUMES=/data/rustfs{1..4}  # Define 4 storage  必须以正整数，官方中以0开始，0是非负整数，不是正整数, 官方给出的是两个点，必须是三个点,但是使用mkdir创建文件夹的时候要用两个点，容器启动后会有一个文件夹rustfs{1..4}，这是正常现象
+      - RUSTFS_VOLUMES=rustfs{1...4}:9000/data/rustfs{1..4}  # Define 4 storage  必须以正整数，官方中以0开始，0是非负整数，不是正整数, 官方给出的是两个点，必须是三个点,但是使用mkdir创建文件夹的时候要用两个点，容器启动后会有一个文件夹rustfs{1..4}，这是正常现象
       - RUSTFS_ADDRESS=0.0.0.0:9000
       - RUSTFS_CONSOLE_ADDRESS=0.0.0.0:9001
       - RUSTFS_CONSOLE_ENABLE=true

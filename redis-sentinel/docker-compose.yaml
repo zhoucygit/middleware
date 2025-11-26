@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: 192.168.10.212/middleware/redis_arm64:6.2.14
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    container_name: redis
+    command: redis-server /usr/local/etc/redis/conf/redis.conf
+    restart: always
+    volumes:
+      - ./conf:/usr/local/etc/redis/conf
+      - ./redis_data:/data
+    environment:
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    network_mode: host
+
+
+
+  redis-sentinel:
+    image: 192.168.10.212/middleware/redis_arm64:6.2.14
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "1"    # 保留的最大日志文件数
+    container_name: redis-sentinel
+    command: redis-sentinel  /usr/local/etc/redis/conf/sentinel.conf
+    restart: always
+    volumes:
+      - ./conf:/usr/local/etc/redis/conf
+      - ./sentinel_data:/data
+    environment:
+      - TZ=Asia/Shanghai
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    network_mode: host
