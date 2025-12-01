@@ -1,15 +1,28 @@
-FROM docker.m.daocloud.io/library/alpine:latest
-USER root
-# 安装jdk8
-RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories && \
-    apk add --no-cache openjdk8 tcpdump curl busybox-extras bash  tzdata bash vim  wget net-tools fontconfig mkfontscale ttf-dejavu && \
-    rm -rf /var/cache/apk/* && \
-    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && \
-    mkdir /app  && \
-    echo 'alias "ll=ls -l"' >> /etc/bash/bashrc && \
-    echo 'alias "tailf=tail -f"' >> /etc/bash/bashrc && \
-    mkfontscale && mkfontdir && fc-cache && fc-cache -fv
-ENV TZ=Asia/Shanghai 
-ENV LANG=en_US.UTF-8  
-ENV LC_ALL=en_US.UTF8
-ADD windows /usr/share/fonts/windows
+FROM ubuntu:24.04
+
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive \
+    TZ=Asia/Shanghai \
+    LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
+ADD ubuntu.sources /etc/apt/sources.list.d/ubuntu.sources
+RUN  apt-get update --allow-unauthenticated && \
+     apt-get install -y --no-install-recommends ca-certificates && \
+     update-ca-certificates  apt-get update && \
+     apt-get install -y --no-install-recommends \
+        nocache \
+        fontconfig \
+        curl  \
+        telnet \
+        tcpdump \
+        locales \
+        tzdata \
+        wget \
+        vim \
+        unzip \
+        openjdk-11-jdk \
+        net-tools && \
+    locale-gen en_US.UTF-8 && \
+    update-locale LANG=en_US.UTF-8 && \
+    rm -rf /var/lib/apt/lists/* && \
