@@ -2,6 +2,11 @@ version: '3.1'
 services:
   jenkins:
     image: jenkins/jenkins:2.484-jdk17
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     volumes:
       - ./conf/custom.sh:/etc/profile.d/custom.sh
       - /usr/local/jdk/:/usr/local/jdk

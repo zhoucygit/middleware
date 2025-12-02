@@ -4,6 +4,13 @@ services:
   mineru-api-1:
     container_name: mineru-api-1
     image: mineru2.0:v1
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     privileged: true
     ports:
       - "20001:30000"
@@ -41,6 +48,13 @@ services:
   mineru-server-1:
     container_name: mineru-server-1
     image: mineru2.0:v1
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     privileged: true
     ipc: host
     shm_size: 32g

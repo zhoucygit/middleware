@@ -4,6 +4,13 @@ services:
   nbchat-kb-ocr-1:
     image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
     container_name: nbchat-kb-ocr-1
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     environment:
       - CUDA_VISIBLE_DEVICES=0
     restart: always
@@ -29,6 +36,13 @@ services:
   nbchat-kb-ocr-2:
     image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
     container_name: nbchat-kb-ocr-2
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     environment:
       - CUDA_VISIBLE_DEVICES=0
     restart: always
@@ -54,6 +68,15 @@ services:
   nbchat-kb-ocr-3:
     image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
     container_name: nbchat-kb-ocr-3
+
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
+
     environment:
       - CUDA_VISIBLE_DEVICES=0
     restart: always
@@ -79,6 +102,14 @@ services:
   nbchat-kb-ocr-4:
     image: 192.168.10.155:7777/nbchat_build_release/nbchat-kb-ocr:2.0
     container_name: nbchat-kb-ocr-4
+
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+        
     environment:
       - CUDA_VISIBLE_DEVICES=0
     restart: always

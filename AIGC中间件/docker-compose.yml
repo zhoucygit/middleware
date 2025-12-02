@@ -1,6 +1,13 @@
 services:
   mysql:
     image: 192.168.10.212/middleware/mysql_arm64:8.0.42
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     container_name: mysql-kb
     restart: always
     environment:
@@ -26,33 +33,49 @@ services:
       - knowledge
 
   redis:
-   image: 192.168.10.212/middleware/redis_arm64:6.2.14
-   container_name: redis-kb
-   command: redis-server /usr/local/etc/redis/redis.conf
-   restart: always
-   volumes:
-     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-     - /data/nbchat-kb/data/redis:/data
-   environment:
-     - TZ=Asia/Shanghai
-   ulimits:
-      nproc: 65535
-      nofile:
-        soft: 20000
-        hard: 40000
-   healthcheck:
-     test: ["CMD", "redis-cli", "ping"]
-     interval: 5s
-     timeout: 5s
-     retries: 10
-   ports:
-     - 16379:6379
-   networks:
-     - knowledge
+    image: 192.168.10.212/middleware/redis_arm64:6.2.14
+    container_name: redis-kb
+
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+ 
+ 
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - /data/nbchat-kb/data/redis:/data
+    environment:
+      - TZ=Asia/Shanghai
+    ulimits:
+       nproc: 65535
+       nofile:
+         soft: 20000
+         hard: 40000
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - 16379:6379
+    networks:
+      - knowledge
 
   nacos-server:
     image: 192.168.10.212/middleware/nacos-server_arm64:v2.4.2
     container_name: nacos-server
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     restart: always
     environment:
       - NACOS_APPLICATION_PORT=18848
@@ -91,11 +114,14 @@ services:
 
   rocketmq-namesrv:
     image: 192.168.10.212/middleware/rocketmq_arm64:5.3.3
+
+
     logging:
       driver: "json-file"
       options:
         max-size: "100m"  # 单个日志文件的最大大小
-        max-file: "1"    # 保留的最大日志文件数
+        max-file: "3"    # 保留的最大日志文件数
+
     shm_size: '1gb'
     container_name: rocketmq-namesrv
     deploy:
@@ -123,6 +149,13 @@ services:
     image: 192.168.10.212/middleware/rocketmq_arm64:5.3.3
     shm_size: '1gb'
     container_name: rocketmq-broker
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     ports:
       - 10909:10909
       - 10911:10911
@@ -151,6 +184,13 @@ services:
     image:  192.168.10.212/middleware/rocketmq-dashboard_arm64:2.0.1
     shm_size: '1gb'
     container_name:  rocketmq-dashboard
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     deploy:
       resources:
         limits:
@@ -173,6 +213,13 @@ services:
   elasticsearch:
     image: 192.168.10.155:7777/common/elasticsearch:7.16.2
     container_name: elasticsearch
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     restart: always
     environment:
       - TZ=Asia/Shanghai
@@ -201,6 +248,13 @@ services:
   minio:
     image: 192.168.10.155:7777/common/minio:RELEASE.2023-03-24T21-41-23Z
     container_name: minio
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     command: minio server /minio_data --console-address ":9999"
     restart: always
     ulimits:
@@ -227,6 +281,13 @@ services:
   etcd:
     image: 192.168.10.155:7777/common/etcd:v3.5.5
     container_name: etcd
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     restart: always
     ulimits:
@@ -253,6 +314,13 @@ services:
   milvus:
     image: 192.168.10.155:7777/common/milvus:v2.3.8
     container_name: milvus
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     command: ["milvus", "run", "standalone"]
     restart: always
     ulimits:
@@ -281,6 +349,13 @@ services:
   milvus-attu:
     image: 192.168.10.155:7777/common/attu:v2.4.5
     container_name: milvus-attu
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+        
     restart: always
     environment:
       MILVUS_URL: 172.168.1.242:19530

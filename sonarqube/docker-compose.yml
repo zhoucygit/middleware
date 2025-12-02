@@ -3,6 +3,13 @@ services:
     image: sonarqube:community
     hostname: sonarqube
     container_name: sonarqube
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
     read_only: true
     restart: always
     depends_on:
@@ -30,6 +37,13 @@ services:
       retries: 5
     hostname: postgresql
     container_name: postgresql
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+        
     restart: always
     environment:
       POSTGRES_USER: sonar

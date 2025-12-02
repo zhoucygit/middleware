@@ -29,6 +29,11 @@ services:
     image: apache/rocketmq:5.2.0
     shm_size: '1gb'
     container_name: rmqbroker-a
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     ports:
       - 10909:10909
       - 10911:10911
@@ -51,6 +56,11 @@ services:
     image: apache/rocketmq:5.2.0
     shm_size: '1gb'
     container_name: rmqbroker-b
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     ports:
       - 10919:10919
       - 10921:10921
@@ -96,6 +106,11 @@ services:
     image: apacherocketmq/rocketmq-dashboard:latest
     shm_size: '1gb'
     container_name:  rocketmq-dashboard
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     deploy:
       resources:
         limits:

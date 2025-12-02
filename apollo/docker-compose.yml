@@ -3,6 +3,11 @@ services:
   apollo-configservice:
     container_name: apollo-configservice
     image: apolloconfig/apollo-configservice:2.1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     ports:
       - "18080:8080"
     volumes:
@@ -18,6 +23,11 @@ services:
   apollo-adminservice:
     container_name: apollo-adminservice
     image: apolloconfig/apollo-adminservice:2.1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     ports:
       - "18090:8090"
     depends_on:
@@ -37,6 +47,11 @@ services:
   apolo-portal:
     container_name: apollo-portal
     image: apolloconfig/apollo-portal:2.1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
     ports:
       - "18070:8070"
     volumes:
