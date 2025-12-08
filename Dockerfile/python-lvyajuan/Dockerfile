@@ -1,3 +1,5 @@
+#  仓库地址 http://gitlab.tydiczt.cn/intelligent-evaluation/backend/table_parse_opencv.git,
+
 FROM nvidia/cuda:12.3.2-base-ubuntu22.04                                                                     
 USER root
 
@@ -32,5 +34,5 @@ RUN sed -i 's|http://.*.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' /etc/
     ln -sf /bin/bash /bin/sh && \
     rm -rf /var/lib/apt/lists/* && \
     pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple && \
-    pip install --no-cache-dir -r /tmp/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ && \
+    pip install --no-cache-dir    --break-system-packages   -r /tmp/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple/ && \
     rm -rf /tmp/requirements.txt
