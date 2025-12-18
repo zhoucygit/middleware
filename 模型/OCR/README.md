@@ -6,7 +6,7 @@
 curl --request POST \
   --url http://10.133.113.242:28080/ocr/upload \
   --header 'content-type: multipart/form-data' \
-  --form files=@/data/softpackage/test.png \
+  --form files=@/data/softpackage/test.jpg \
   --form source=false \
   --form useCuda=true
 ```
