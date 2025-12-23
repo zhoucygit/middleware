@@ -17,11 +17,11 @@ services:
       - ./data-REDISPORT:/data
     environment:
       - TZ=Asia/Shanghai
-    # healthcheck:
-    #   test: ["CMD", "redis-cli", "ping"]
-    #   interval: 5s
-    #   timeout: 5s
-    #   retries: 10
+    healthcheck:
+      test: [["CMD", "redis-cli", "-p", "REDISPORT", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
     ports:
       - REDISPORT:REDISPORT
       - REDISBUSPORT:REDISBUSPORT

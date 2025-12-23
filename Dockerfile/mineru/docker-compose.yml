@@ -51,7 +51,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: all    # 这里写 all 就是所有 GPU
+              count: all  # 这里写 all 就是所有 GPU  如果想挂载某一张卡device_ids: ["0"] 或  ["0", "1"]  但是需要取消    privileged: true 不然还是能看到所有卡
               capabilities: [gpu]
             # 另一种写法
             # - driver: nvidia
