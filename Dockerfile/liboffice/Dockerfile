@@ -1,4 +1,5 @@
 FROM docker.1ms.run/linuxserver/libreoffice:25.2.5
+
 USER root
 # 安装jdk8
 RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories && \
@@ -14,5 +15,5 @@ RUN sed -i "s/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g" /etc/apk/repositories
 ENV TZ=Asia/Shanghai 
 ENV LANG=en_US.UTF-8  
 ENV LC_ALL=en_US.UTF8
-ADD config /app/config
+#ADD config /app/config
 WORKDIR /app

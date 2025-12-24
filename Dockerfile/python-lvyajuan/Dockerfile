@@ -1,6 +1,9 @@
 #  仓库地址 http://gitlab.tydiczt.cn/intelligent-evaluation/backend/table_parse_opencv.git,
 
-FROM nvidia/cuda:12.3.2-base-ubuntu22.04                                                                     
+FROM nvidia/cuda:12.3.2-base-ubuntu22.04    
+#  基础镜像大小 30.82 MB
+
+                                                                 
 USER root
 
 ENV DEBIAN_FRONTEND=noninteractive \
