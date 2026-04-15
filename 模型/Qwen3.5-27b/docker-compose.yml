@@ -1,0 +1,59 @@
+services:
+  Qwen3.5-27B:
+    image: quay.io/ascend/vllm-ascend:v0.18.0rc1
+    container_name: Qwen3.5-27B
+    restart: always
+    privileged: true
+    ipc: host
+    pid: host
+    working_dir: /app
+
+    # 限制容器本身日志大小
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+
+    # 由于内部无法将端口监听到0.0.0.0，因此无法使用端口映射的方式
+#    network_mode: host    
+    ports:
+      - "8080:8080"
+    environment:
+      - MINDIE_LOG_TO_STDOUT=1
+      - ASCEND_RT_VISIBLE_DEVICES=6,7
+      - ASCEND_VISIBLE_DEVICES=6,7
+    
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+
+    volumes:
+      - /usr/local/dcmi:/usr/local/dcmi
+      - /usr/local/bin/npu-smi:/usr/local/bin/npu-smi
+      - /usr/local/Ascend/driver:/usr/local/Ascend/driver
+      - /etc/ascend_install.info:/etc/ascend_install.info
+      - /etc/vnpu.cfg:/etc/vnpu.cfg
+      - ./data:/app
+      
+
+    #command: tail -f /dev/null > /dev/null
+    command: >
+      vllm serve /app/Qwen3.5-27B
+      --host 0.0.0.0 
+      --port 8080
+      --dtype bfloat16
+      --tensor-parallel-size 2
+      --max-model-len 16384
+      --served-model-name qwen3.5-27b
+      --trust-remote-code
+      --uvicorn-log-level info
