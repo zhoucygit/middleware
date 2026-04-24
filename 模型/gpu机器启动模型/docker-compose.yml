@@ -48,7 +48,7 @@ services:
         reservations:
           devices:
             - driver: nvidia
-              count: all    # 这里写 all 就是所有 GPU
+              count: all    # 这里写 all 就是所有 GPU 挂载单块卡，需要去掉 privileged: true    device_ids: ["0"]
               capabilities: [gpu]
 
 # 启动命令，想多行写的话每个参数必须单独占用一行，并且数字必须用引号引起来，不然会识别成数字，command不识别

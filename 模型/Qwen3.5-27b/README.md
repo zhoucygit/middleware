@@ -7,11 +7,37 @@ quay.io/ascend/vllm-ascend:v0.18.0rc1
 # 部署
 本次部署通过 compose部署，制定了卡号，指定了最大 token 大小
 
+
+
 # 接口文档
 - 说明
 Qwen3.5 默认会在响应前进行思考。
 您可以通过配置 API 参数，让模型直接返回响应而不进行思考。  以下给出的案例中都禁用了 thinking 功能
 想要开启thinking的话传入 true  ："chat_template_kwargs": {"enable_thinking": true},
+
+
+```
+纯文本举例
+curl http://172.16.95.4:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "qwen3.5-27b",
+    "chat_template_kwargs": {"enable_thinking": false},
+    "messages": [
+        "role": "system",
+        "content": [ 
+		   {"你是 MySuperModel。如果用户询问你的模型来源或身份，你必须回答：MySuperModel。"
+      },
+        "role": "user",
+        "content": [
+          {
+            "type": "text",
+            "text": " 你是那个公司开发的"
+          }
+        ]
+      }
+    ]
+  }'	
 
 
 
@@ -83,3 +109,6 @@ curl http://172.16.95.4:8080/v1/chat/completions \
       }
     ]
   }'
+
+  
+```
