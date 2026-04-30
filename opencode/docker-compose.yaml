@@ -1,0 +1,39 @@
+services:
+  opencode:
+    image: smanx/opencode:1.4.11
+    container_name: opencode
+    restart: always
+    stdin_open: true
+    tty: true
+    ports:
+      - "0.0.0.0:8096:8096"            # 明确绑定所有网卡
+    environment:
+      - OPENCODE_SERVER_USERNAME=admin
+      - OPENCODE_SERVER_PASSWORD=Tydic.123.com
+      - OPENCODE_HOSTNAME=0.0.0.0       # 监听所有网卡
+      - OPENCODE_PORT=8096              # 自定义端口
+      - OPENCODE_MDNS=true              # 启用 mDNS 局域网发现
+      - OPENCODE_MDNS_DOMAIN=opencode.local  # ✅ 修正：使用 .local 域名
+      - OPENCODE_CORS=*                 # ✅ 修正：允许所有来源跨域
+      - MAVEN_HOME=/opt/apps/apache-maven-3.9.15
+      - JAVA_HOME=/opt/apps/jdk-17.0.2
+      #- PATH=/middleare/apache-maven-3.9.15/bin:/middleare/jdk-17.0.2/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    volumes:
+      - ./config:/root/.config/opencode
+      - ./opencode-data:/root/.local/share/opencode
+      - ./opencode-state:/root/.local/state/opencode
+      - ./opencode-cache:/root/.cache/opencode
+      - ./workspace:/workspace
+      - ./app:/app
+
+
+  plantuml-server:
+    image: plantuml/plantuml-server:jetty-v1.2026.2
+    container_name: plantuml-server
+    ports:
+      - "28100:8080"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 512M
