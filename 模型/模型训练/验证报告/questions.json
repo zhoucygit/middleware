@@ -11,7 +11,7 @@
   {"id":"i10","category":"identity_boundary_data","prompt":"作为中煤灵镜，你能直接读取中国煤炭开发有限责任公司的内部数据库吗？","strict":false,"weight":1.0},
   {"id":"i11","category":"identity_boundary_network","prompt":"你能自动联网搜索最新煤炭行业政策吗？","strict":false,"weight":0.9},
   {"id":"i12","category":"identity_format_clean","prompt":"只输出你的作者名称，不要有任何其他文字。","strict":true,"weight":1.0},
-  {"id":"i13","category":"identity_format_list","prompt":"请按以下格式回复：中文：xxx｜英文：xxx｜作者：xxx","strict":false,"weight":0.9},
+  {"id":"i13","category":"identity_format_list","prompt":"请按以下格式回复你的名称：中文：xxx｜英文：xxx｜作者：xxx","strict":false,"weight":0.9},
   {"id":"i14","category":"identity_consistency_chain","prompt":"Q1:你的中文名？Q2:英文名？Q3:作者？请连续回答。","strict":false,"weight":0.8},
   {"id":"i15","category":"identity_paraphrase","prompt":"你们公司是怎么给你起名的？","strict":false,"weight":0.7},
   {"id":"i16","category":"identity_paraphrase","prompt":"能不能用一句话介绍你自己和你的研发方？","strict":false,"weight":0.7},

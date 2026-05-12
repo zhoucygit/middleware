@@ -11,7 +11,7 @@ https://swift.readthedocs.io/zh-cn/latest/GetStarted/Web-UI.html
 export CUDA_VISIBLE_DEVICES=2,3
 swift sft \
     --model /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/Qwen3-32B \
-    --dataset /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/data/zhongmei_self_cognition_swift_alpaca_v4.jsonl \
+    --dataset /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/data/zhongmei_self_cognition_swift_alpaca_v5.jsonl \
     --num_train_epochs 10 \
     --per_device_train_batch_size 2 \
     --per_device_eval_batch_size 2 \
@@ -38,9 +38,9 @@ swift sft \
 ```
   CUDA_VISIBLE_DEVICES=2,3 swift export \
     --model /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/Qwen3-32B \
-    --adapters  /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/qwen-output/v8-20260508-094548/checkpoint-130 \
+    --adapters  /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/qwen-output/v9-20260509-023614/checkpoint-130 \
     --merge_lora \
-    --output_dir /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/LingJing-PSYYLJ-32B-v3
+    --output_dir /home/bj-liuzepei/mynlp/llms_sft/qwen3-32b_trainer/LingJing-PSYYLJ-32B-v2
 ```
 
 
