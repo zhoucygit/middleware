@@ -2,6 +2,7 @@ services:
   PINGSHEN-paddlex_hps_PP-StructureV3_sdk:
     image: ccr-2vdh3abv-pub.cnc.bj.baidubce.com/paddlex/hps:paddlex3.3-gpu
     container_name: PINGSHEN-paddlex_hps_PP-StructureV3_sdk
+    working_dir: /app
 
     restart: always
     privileged: true
