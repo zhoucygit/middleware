@@ -9,12 +9,22 @@ use_table_recognition: True
 use_formula_recognition: False
 use_chart_recognition: False
 use_region_detection: True
+format_block_content: False
+
+markdown_ignore_labels:
+  - number
+  - footnote
+  - header
+  - header_image
+  - footer
+  - footer_image
+  - aside_text
 
 SubModules:
   LayoutDetection:
     module_name: layout_detection
     model_name: PP-DocLayout_plus-L
-    model_dir: null
+    model_dir: /models/PP-DocLayout_plus-L
     batch_size: 8
     threshold: 
       0: 0.3  # paragraph_title
@@ -41,7 +51,7 @@ SubModules:
     layout_unclip_ratio: [1.0, 1.0] 
     layout_merge_bboxes_mode: 
       0: "large"  # paragraph_title
-      1: "union"  # image
+      1: "large"  # image
       2: "union"  # text
       3: "union"  # number
       4: "union"  # abstract
@@ -68,7 +78,7 @@ SubModules:
   RegionDetection:
     module_name: layout_detection
     model_name: PP-DocBlockLayout
-    model_dir: null
+    model_dir: /models/PP-DocBlockLayout
     layout_nms: True
     layout_merge_bboxes_mode: "small"
 
@@ -82,12 +92,12 @@ SubPipelines:
       DocOrientationClassify:
         module_name: doc_text_orientation
         model_name: PP-LCNet_x1_0_doc_ori
-        model_dir: null
+        model_dir: /models/PP-LCNet_x1_0_doc_ori
         batch_size: 8
       DocUnwarping:
         module_name: image_unwarping
         model_name: UVDoc
-        model_dir: null
+        model_dir: /models/UVDoc
 
   GeneralOCR:
     pipeline_name: OCR
@@ -99,7 +109,7 @@ SubPipelines:
       TextDetection:
         module_name: text_detection
         model_name: PP-OCRv5_server_det
-        model_dir: null
+        model_dir: /models/PP-OCRv5_server_det
         limit_side_len: 736
         limit_type: min
         max_side_limit: 4000
@@ -109,12 +119,12 @@ SubPipelines:
       TextLineOrientation:
         module_name: textline_orientation
         model_name: PP-LCNet_x1_0_textline_ori
-        model_dir: null
+        model_dir: /models/PP-LCNet_x1_0_textline_ori
         batch_size: 8
       TextRecognition:
         module_name: text_recognition
         model_name: PP-OCRv5_server_rec
-        model_dir: null
+        model_dir: /models/PP-OCRv5_server_rec
         batch_size: 8
         score_thresh: 0.0
  
@@ -128,27 +138,27 @@ SubPipelines:
       TableClassification:
         module_name: table_classification
         model_name: PP-LCNet_x1_0_table_cls
-        model_dir: null
+        model_dir: /models/PP-LCNet_x1_0_table_cls
 
       WiredTableStructureRecognition:
         module_name: table_structure_recognition
         model_name: SLANeXt_wired
-        model_dir: null
+        model_dir: /models/SLANeXt_wired
       
       WirelessTableStructureRecognition:
         module_name: table_structure_recognition
         model_name: SLANet_plus
-        model_dir: null
+        model_dir: /models/SLANet_plus
       
       WiredTableCellsDetection:
         module_name: table_cells_detection
         model_name: RT-DETR-L_wired_table_cell_det
-        model_dir: null
+        model_dir: /models/RT-DETR-L_wired_table_cell_det
       
       WirelessTableCellsDetection:
         module_name: table_cells_detection
         model_name: RT-DETR-L_wireless_table_cell_det
-        model_dir: null
+        model_dir: /models/RT-DETR-L_wireless_table_cell_det
 
       TableOrientationClassify:
         module_name: doc_text_orientation
@@ -174,7 +184,7 @@ SubPipelines:
           TextLineOrientation:
             module_name: textline_orientation
             model_name: PP-LCNet_x1_0_textline_ori
-            model_dir: null
+            model_dir: /models/PP-LCNet_x1_0_textline_ori
             batch_size: 8
           TextRecognition:
             module_name: text_recognition
@@ -222,5 +232,5 @@ SubPipelines:
       FormulaRecognition:
         module_name: formula_recognition
         model_name: PP-FormulaNet_plus-L
-        model_dir: null
+        model_dir: /models/PP-FormulaNet_plus-L
         batch_size: 8

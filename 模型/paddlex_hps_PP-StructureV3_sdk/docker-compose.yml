@@ -28,7 +28,7 @@ services:
     environment:
       - TZ=Asia/Shanghai
       - PADDLEX_HPS_DEVICE_TYPE=gpu
-      - PADDLEX_HPS_USE_HPIP=1
+
     volumes:
       - ./paddlex:/root/.paddlex
       - ./server:/app

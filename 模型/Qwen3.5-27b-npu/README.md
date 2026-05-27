@@ -21,23 +21,21 @@ Qwen3.5 默认会在响应前进行思考。
 curl http://172.16.95.4:8080/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
-    "model": "qwen3.5-27b",
-    "chat_template_kwargs": {"enable_thinking": false},
-    "messages": [
-        "role": "system",
-        "content": [ 
-		   {"你是 MySuperModel。如果用户询问你的模型来源或身份，你必须回答：MySuperModel。"
-      },
-        "role": "user",
-        "content": [
-          {
-            "type": "text",
-            "text": " 你是那个公司开发的"
-          }
-        ]
-      }
-    ]
-  }'	
+  "model": "qwen3.5-27b",
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "messages": [
+    {
+      "role": "system",
+      "content": "你是 MySuperModel。如果用户询问你的模型来源或身份，你必须回答：MySuperModel。"
+    },
+    {
+      "role": "user",
+      "content": "你是那个公司开发的"
+    }
+  ]
+}'
 
 
 

@@ -1,5 +1,66 @@
 # 版面分析模型部署  
 
+paddlex  到 3.5版本的   还不支持 5090
+# 安装
+
+ - 创建虚拟环境
+ - 安装飞桨框架
+   - gpu
+     建议使用官方提供的镜像
+     截止到 3.5版本，还不支持 5090 这种新架构的 gpu
+   - npu
+    查看https://github.com/PaddlePaddle/PaddleX/blob/release/3.0/docs/practical_tutorials/high_performance_npu_tutorial.md
+   ```
+    * 注意需要先安装飞桨 cpu 版本
+    python -m pip install paddlepaddle==3.0.0.dev20250430 -i https://www.paddlepaddle.org.cn/packages/nightly/cpu
+    python -m pip install paddle-custom-npu -i https://www.paddlepaddle.org.cn/packages/nightly/npu
+
+    #CANN-8.0.RC2 对 numpy 和 opencv 部分版本不支持，需要安装指定版本
+    python -m pip install numpy==1.26.4 opencv-python==3.4.18.65 -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+    arm机器上需要设置环境变量（x86环境无需设置）
+    
+    # 解决libgomp在arm机器上报错
+    # "libgomp cannot allocate memory in static TLS block"
+    export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1:$LD_PRELOAD
+    验证安装包安装完成之后，运行如下命令
+    
+    python -c "import paddle; paddle.utils.run_check()"
+    预期得到如下输出结果
+    
+    Running verify PaddlePaddle program ...
+    PaddlePaddle works well on 1 npu.
+    PaddlePaddle works well on 8 npus.
+    PaddlePaddle is installed successfully! Let's start deep learning with PaddlePaddle now.
+   ```
+
+
+
+
+ - 安装 paddlex
+   - gpu 安装
+      强烈建议使用官方现成的镜像
+   - npu安装
+   ```
+   pip install "paddlex[base]"
+
+   ```
+   说明
+     - 仅安装必须依赖（可以在之后按需安装可选依赖）
+     ```
+     pip install paddlex
+     ```
+     - 安装 PaddleX “基础功能”需要的全部依赖：
+     ```
+     pip install "paddlex[base]"
+     ```
+     - 仅安装某项功能所需依赖：
+     ```
+     pip install "paddlex[ocr]"
+     ```
+   - npu安装
+
+
 # 下载介质
 官方文档
 https://paddlepaddle.github.io/PaddleX/latest/pipeline_deploy/serving.html#23
@@ -40,30 +101,64 @@ instance_group [
 ]
 ```
 
+# 模型下载
+paddlex  主要使用以下模型文件，第一次启动会自动从 modlescope 下载，为了节省时间，可以使用准备好的离线模型
+```
+PP-DocBlockLayout/
+PP-DocLayout_plus-L/
+PP-FormulaNet_plus-L/
+PP-LCNet_x1_0_doc_ori/
+PP-LCNet_x1_0_table_cls/
+PP-LCNet_x1_0_textline_ori/
+PP-OCRv5_server_det/
+PP-OCRv5_server_rec/
+RT-DETR-L_wired_table_cell_det/
+RT-DETR-L_wireless_table_cell_det/
+SLANet_plus/
+SLANeXt_wired/
+UVDoc/
+
+```
 
 
 # 个性化
 
-吕亚娟对配置文件做了一些更改，将本工程内提供的pipeline_config.yaml 替换 原本server文件夹内的文件
-她可能主要做了以下修改该
+吕亚娟对配置文件做了一些更改
+主要做了以下修改该
 ```
-use_doc_preprocessor: False
-use_seal_recognition: False
-use_table_recognition: True
-use_formula_recognition: False
-use_chart_recognition: False
-use_region_detection: True
 
+原
+use_formula_recognition: True
+改为
+use_formula_recognition: False
+
+原      
+1: "large"  # image
+改为
 1: "union"  # image
+
+原
+8: "union"  # table
+改为
 8: "small"  # table
 ```
 
 
+# 指定模型路径
 
-# 编译模型
+paddlex 有  bug
+pipeline_config.yaml 改完后只是在加载阶段使用了本地模型 
+所以模型路径还是要挂在到他的默认模型路径/root/.paddlex/official_models
 
-第一次启动容器他会根据环境编译并下载模型，
-如果离线环境应当提前准备该.paddlex离线模型文件
+  以上模型是个性化之后的模型列表，在pipeline_config.yaml  问价中搜索相关模型名称，更改 model_dir 对应的值，默认是 null
+  示例：
+  ```
+    model_name: PP-DocLayout_plus-L
+    model_dir: /root/.paddlex/official_models/PP-DocLayout_plus-L
+  ```
+
+
+
 
 
 

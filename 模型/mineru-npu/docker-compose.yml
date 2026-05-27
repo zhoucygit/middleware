@@ -1,0 +1,159 @@
+
+# 提示： 如果在这个文件中需要启动多个mineru-server实例，需要通过denpendon的方式检查第一个mineru-server是否启动成功
+services:
+  mineru-api-1:
+    container_name: mineru-api-1
+    image: mineru_npu_vllm_v0.18.0rc1:v1
+
+
+    restart: always
+    privileged: true
+    shm_size: "8g"
+    ipc: host
+    pid: host
+    working_dir: /modles
+
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
+
+    ports:
+      - "20001:30000"
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c '</dev/tcp/127.0.0.1/30000'"]
+      interval: 5s         # 每 5 秒检测一次
+      timeout: 3s          # 检查超时 3 秒
+      retries: 5           # 连续 5 次失败才标记为 unhealthy
+      start_period: 120s    # 容器启动后等待 10 秒再开始健康检查
+
+    environment:
+      - MINERU_MODEL_SOURCE=local
+      - CUDA_VISIBLE_DEVICES=2,3
+
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+
+    volumes:
+      - ./data:/data
+      - ./modles:/root/.cache
+      - ./mineru.json:/root/mineru.json
+
+
+
+    command:  
+      mineru-api --host 0.0.0.0 --port 30000 --allow-public-http-client
+    # 如需启用 torch compile，取消下一行注释
+    # command: mineru-api --host 0.0.0.0 --port 30001 --enable-torch-compile
+
+
+  mineru-server-1:
+    container_name: mineru-server-1
+    image: mineru_npu_vllm_v0.18.0rc1:v1
+
+    restart: always
+    privileged: true
+    shm_size: "32g"
+    ipc: host
+    pid: host
+    working_dir: /modles
+
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"  # 单个日志文件的最大大小
+        max-file: "3"    # 保留的最大日志文件数
+
+
+    environment:
+      - MINERU_MODEL_SOURCE=local
+      - MINDIE_LOG_TO_STDOUT=1
+      - ASCEND_RT_VISIBLE_DEVICES=0
+      - ASCEND_VISIBLE_DEVICES=0
+
+    devices:
+      - /dev/davinci0:/dev/davinci0
+      - /dev/davinci1:/dev/davinci1
+      - /dev/davinci2:/dev/davinci2
+      - /dev/davinci3:/dev/davinci3
+      - /dev/davinci4:/dev/davinci4
+      - /dev/davinci5:/dev/davinci5
+      - /dev/davinci6:/dev/davinci6
+      - /dev/davinci7:/dev/davinci7
+      - /dev/davinci_manager:/dev/davinci_manager
+      - /dev/devmm_svm:/dev/devmm_svm
+      - /dev/hisi_hdc:/dev/hisi_hdc
+
+    volumes:
+      - /usr/local/dcmi:/usr/local/dcmi
+      - /usr/local/bin/npu-smi:/usr/local/bin/npu-smi
+      - /usr/local/Ascend/driver:/usr/local/Ascend/driver
+      - /etc/ascend_install.info:/etc/ascend_install.info
+      - /etc/vnpu.cfg:/etc/vnpu.cfg
+      - ./data:/app
+      - ./data:/data
+      - ./modles:/root/.cache
+      - ./mineru.json:/root/mineru.json
+
+    healthcheck:
+      test: ["CMD", "bash", "-c", "timeout 2 bash -c '</dev/tcp/127.0.0.1/30000'"]
+      interval: 5s         # 每 5 秒检测一次
+      timeout: 3s          # 检查超时 3 秒
+      retries: 5           # 连续 5 次失败才标记为 unhealthy
+      start_period: 120s    # 容器启动后等待 10 秒再开始健康检查
+    depends_on:
+      mineru-api-1:
+        condition: service_healthy
+
+    ports:
+      - "30000:30000"
+    command: >
+      mineru-openai-server --host 0.0.0.0 --port 30000 
+  nginx:
+    image: 192.168.10.212/middleware/nginx_x86:1.26.2
+    privileged: true
+    ipc: host
+    shm_size: 4g
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m" 
+        max-file: "1"
+    restart: always
+    hostname: nginx
+    container_name: nginx
+    volumes:
+      - ./data:/data
+      - ./conf.d/:/etc/nginx/conf.d
+      - ./logs:/var/log/nginx/
+    environment:
+      - TZ=Asia/Shanghai
+    ports:
+      - 20006:20006
+
+
+#可选配置  如果多个机器启动mineru多实例，涉及到共享磁盘的问题，可以通过定义volumes的方式为容器挂载nfs磁盘，在service的valumes中需要共享的路径挂载方式写成  - nfs_share:/data  挂载即可，如果不用共享路径以下配置省略，上边默认使用的是系统本地磁盘
+# 使用以下配置有个前提条件，需要安装nfs客户端
+# 在 Debian / Ubuntu 系统上：需要安装
+# apt install -y nfs-common
+# 在 CentOS / Rocky / RHEL / AlmaLinux 系统上：需要安装
+# yum install -y nfs-utils
+volumes:
+  nfs_share:
+    driver_opts:
+      type: "nfs"
+      o: "addr=10.133.81.99,nolock,soft,rw,nfsvers=3"
+      device: ":/SZ_SMART_TY"

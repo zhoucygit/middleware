@@ -1,6 +1,7 @@
 services:
   minio:
-    image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
+    #image: minio/minio:RELEASE.2025-04-22T22-12-26Z-cpuv1
+    dimage: 192.168.10.212/middleware/minio_arm64:RELEASE.2025-04-22T22-12-26Z-cpuv1
     container_name: minio
     logging:
       driver: "json-file"
